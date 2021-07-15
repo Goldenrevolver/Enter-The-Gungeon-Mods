@@ -24,17 +24,17 @@ namespace ShrineDesc
             descriptions = new Dictionary<string, string>
             {
                 { "shrine_ammo", "Refills the ammo of all weapons, but increases curse by 3.5. Can only be used once." },
-                { "shrine_blank", "Using a blank near the statue has a 90% chance to spawn a chest. This chest may be locked or unlocked. Repeated use of blanks can spawn more chests, but each chest received decreases the success chance by 45%, down to a minimum of 25%. The chest can be a mimic." },
-                { "shrine_blood", "Removes one heart container (or two armor if The Robot). Some enemies become highlighted in red. Standing near highlighted enemies damages and drains them, healing the player after draining enough. This can be used to damage enemies such as Cannonbalrog while they have disappeared." },
-                { "shrine_challenge", "Using the shrine forces the player to fight through three waves of enemies. Surviving the waves rewards the player with a chest. The chest can be a mimic. Can only be used once." },
+                { "shrine_blank", "Using a blank near the statue has a 90% chance to spawn a chest. This chest may be locked or unlocked and can be a mimic. Repeated use of blanks can spawn more chests, but each chest received decreases the success chance by 45%, down to a minimum of 25%." },
+                { "shrine_blood", "Removes one heart container (or two armor if The Robot). Some enemies become highlighted in red. Standing near highlighted enemies damages and drains them, healing the player after draining enough." },
+                { "shrine_challenge", "Using the shrine forces the player to fight through three waves of enemies. Surviving the waves rewards the player with an unlocked chest. The chest can be a mimic. Can only be used once." },
                 { "shrine_cleanse", "Sets the player's curse to 0 in exchange for 5 Shells per point of curse. Can be used multiple times." },
-                { "shrine_companion", "Removes one heart container (or two armor if The Robot), and grants a random item that summons a familiar. The shrine can only be used once but you can have multiple companions. (Doesn't give a familiar in Rainbow Mode, but still takes a heart container!)" },
+                { "shrine_companion", "Removes one heart container (or two armor if The Robot), and grants a random item that summons a familiar. Can only be used once. (Doesn't give a familiar in Rainbow Mode, but still takes a heart container!)" },
                 { "shrine_dice", "Using this shrine grants one positive and one negative effect. Can only be used once." },
                 { "shrine_glass", "Grants three Glass Guon Stones which block enemy bullets but break if the player takes damage. Can only be used once." },
                 { "shrine_junk", "Grants a piece of armor in exchange for Junk. Can be used multiple times." },
                 { "shrine_yv", "Costs 10 Shells to use the first time, and the cost increases by 10 Shells per use. Every time the player fires a weapon, there is a chance for it to quickly fire 2 to 4 times at no extra ammo cost. Each use linearly increases the chance to activate the effect by 3.7%." },
                 { "shrine_fallenangel", "Removes one heart container (or two armor if The Robot), increases damage by 25%, and increases curse by 1.5. Can only be used once." },
-                { "shrine_health", "Heals the player for one heart in exchange for their currently held weapon (consumes the active gun with no benefit for The Robot). Can be used multiple times." }
+                { "shrine_health", "Heals the player for one heart in exchange for their currently held weapon (cannot be used by The Robot). Can be used multiple times." }
             };
         }
 
