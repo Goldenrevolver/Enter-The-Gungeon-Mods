@@ -2,7 +2,7 @@
 
 namespace AutoReload
 {
-    class Reloader : MonoBehaviour
+    internal class Reloader : MonoBehaviour
     {
         public void Update()
         {
@@ -28,6 +28,12 @@ namespace AutoReload
 
         public static void Reload(PlayerController player)
         {
+            // if AutoReload should be disabled when you have the Rad Gun or Cog Of Battle equipped
+            if (AutoReload.UseExceptions && (player.CurrentGun.PickupObjectId == 556 || player.HasPassiveItem(135)))
+            {
+                return;
+            }
+
             //delegate is not simplified on purpose as this is the original code from the HandlePlayerInput method called in the Update method of the PlayerController class
             if (player.AcceptingAnyInput && player.AcceptingNonMotionInput)
             {

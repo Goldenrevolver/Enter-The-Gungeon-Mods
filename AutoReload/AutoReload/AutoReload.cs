@@ -7,10 +7,11 @@ namespace AutoReload
 {
     public class AutoReload : ETGModule
     {
-        private static readonly string version = "1.1";
+        private static readonly string version = "1.2";
 
         public static bool EmptyClipReload;
         public static bool ClearedRoomReload;
+        public static bool UseExceptions;
 
         //init is too early for using ETGModConsole
         public override void Init()
@@ -19,6 +20,8 @@ namespace AutoReload
             EmptyClipReload = PlayerPrefs.GetInt("AutoReloadOnEmptyClip", 1) == 1;
             //default false
             ClearedRoomReload = PlayerPrefs.GetInt("AutoReloadOnClearedRoom", 0) == 1;
+            //default false
+            UseExceptions = PlayerPrefs.GetInt("AutoReloadUseExceptions", 0) == 1;
 
             GameObject reloadManagerObject = new GameObject("Reload Manager");
             reloadManagerObject.AddComponent<Reloader>();
@@ -46,11 +49,18 @@ namespace AutoReload
                 ETGModConsole.Log("AutoReload on cleared room: " + ClearedRoomReload);
                 PlayerPrefs.SetInt("AutoReloadOnClearedRoom", ClearedRoomReload ? 1 : 0);
                 PlayerPrefs.Save();
+            }).AddUnit("useExceptions", delegate (string[] e)
+            {
+                //flips the bool value
+                UseExceptions ^= true;
+                ETGModConsole.Log("Use AutoReload exceptions: " + UseExceptions);
+                PlayerPrefs.SetInt("AutoReloadUseExceptions", UseExceptions ? 1 : 0);
+                PlayerPrefs.Save();
             });
 
             Hook hook = new Hook(typeof(PlayerController).GetMethod("OnRoomCleared", BindingFlags.Public | BindingFlags.Instance), typeof(AutoReload).GetMethod("OnRoomClearedHook"));
 
-            ETGModConsole.Log($"AutoReload v{version} initialized (on empty clip: {EmptyClipReload}, on cleared room: {ClearedRoomReload})");
+            ETGModConsole.Log($"AutoReload v{version} initialized (on empty clip: {EmptyClipReload}, on cleared room: {ClearedRoomReload}, use exceptions: {UseExceptions})");
         }
 
         public static void OnRoomClearedHook(Action<PlayerController> baseMethod, PlayerController player)
