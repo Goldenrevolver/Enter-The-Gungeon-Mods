@@ -13,14 +13,16 @@ namespace AutoReload
         public static bool ClearedRoomReload;
         public static bool UseExceptions;
 
-        //init is too early for using ETGModConsole
+        // init is too early for using ETGModConsole
         public override void Init()
         {
-            //default true
+            // default true
             EmptyClipReload = PlayerPrefs.GetInt("AutoReloadOnEmptyClip", 1) == 1;
-            //default false
+
+            // default false
             ClearedRoomReload = PlayerPrefs.GetInt("AutoReloadOnClearedRoom", 0) == 1;
-            //default false
+
+            // default false
             UseExceptions = PlayerPrefs.GetInt("AutoReloadUseExceptions", 0) == 1;
 
             GameObject reloadManagerObject = new GameObject("Reload Manager");
@@ -28,30 +30,30 @@ namespace AutoReload
             UnityEngine.Object.DontDestroyOnLoad(reloadManagerObject);
         }
 
-        //exit is not getting called at all, so I have to save settings when I change them
+        // exit is not getting called at all, so I have to save settings when I change them
         public override void Exit() { }
 
         public override void Start()
         {
-            //AddGroup doesnt return the correct group for some reason so I have to get it again
+            // AddGroup doesnt return the correct group for some reason so I have to get it again
             ETGModConsole.Commands.AddGroup("autoReload");
             ETGModConsole.Commands.GetGroup("autoReload").AddUnit("emptyClip", delegate (string[] e)
             {
-                //flips the bool value
+                // flips the bool value
                 EmptyClipReload ^= true;
                 ETGModConsole.Log("AutoReload on empty clip: " + EmptyClipReload);
                 PlayerPrefs.SetInt("AutoReloadOnEmptyClip", EmptyClipReload ? 1 : 0);
                 PlayerPrefs.Save();
             }).AddUnit("clearedRoom", delegate (string[] e)
             {
-                //flips the bool value
+                // flips the bool value
                 ClearedRoomReload ^= true;
                 ETGModConsole.Log("AutoReload on cleared room: " + ClearedRoomReload);
                 PlayerPrefs.SetInt("AutoReloadOnClearedRoom", ClearedRoomReload ? 1 : 0);
                 PlayerPrefs.Save();
             }).AddUnit("useExceptions", delegate (string[] e)
             {
-                //flips the bool value
+                // flips the bool value
                 UseExceptions ^= true;
                 ETGModConsole.Log("Use AutoReload exceptions: " + UseExceptions);
                 PlayerPrefs.SetInt("AutoReloadUseExceptions", UseExceptions ? 1 : 0);
@@ -65,12 +67,13 @@ namespace AutoReload
 
         public static void OnRoomClearedHook(Action<PlayerController> baseMethod, PlayerController player)
         {
-            //if you dont call the base method, its not getting called at all (I wonder how that affects compatibility if you hook the same method)
+            // if you dont call the base method, its not getting called at all (I wonder how that affects compatibility if you hook the same method)
             baseMethod(player);
             if (ClearedRoomReload && player != null)
             {
                 Gun currentGun = player.CurrentGun;
-                //similar to the description in Reloader.Update
+
+                // similar to the description in Reloader.Update
                 if (currentGun != null && currentGun.ClipCapacity > 1 && currentGun.ammo > 0 && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
                 {
                     Reloader.Reload(player);

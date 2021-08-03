@@ -10,7 +10,7 @@ namespace ShrineDesc
     public class ShrineDesc : ETGModule
     {
         public static readonly string MOD_NAME = "Shrine Descriptions";
-        public static readonly string VERSION = "1.0";
+        public static readonly string VERSION = "1.0.2";
 
         private static GameObject shrineTextHolder;
         private static Dictionary<string, string> descriptions;
@@ -112,7 +112,7 @@ namespace ShrineDesc
 
             if (shrine is ChallengeShrineController)
             {
-                key = "challenge";
+                key = "shrine_challenge";
             }
 
             Transform talkPoint = (Transform)shrine.GetType().GetField("talkPoint", BindingFlags.Public | BindingFlags.Instance).GetValue(shrine);
@@ -132,7 +132,20 @@ namespace ShrineDesc
                 return;
             }
 
-            StringBuilder tooltip = new StringBuilder("Give the shrine the weapons the Beholster uses in game throughout multiple runs. When placing the last gun on the shrine, they will all be returned to the player, granting the Behold! synergy and resetting the shrine.");
+            StringBuilder tooltip = new StringBuilder("Give the shrine the weapons the Beholster uses in game throughout multiple runs. When placing the last gun on the shrine, they will all be returned to the player, granting the Behold! synergy");
+
+            bool hasBetterBeholsterShrineMod = false;
+            foreach (var item in ETGMod.GameMods)
+            {
+                // mod is installed
+                if (item.Metadata.Name == "BetterBeholsterShrine")
+                {
+                    hasBetterBeholsterShrineMod = true;
+                    break;
+                }
+            }
+
+            tooltip.Append(!hasBetterBeholsterShrineMod ? " and resetting the shrine." : ". After that, future encounters with the shrine do this without needing the guns again.");
 
             if (!GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_01))
             {

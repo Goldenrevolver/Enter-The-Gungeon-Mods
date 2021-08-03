@@ -6,7 +6,7 @@ namespace AutoReload
     {
         public void Update()
         {
-            //the variable checking is exactly the same as it would be in PlayerController.Update
+            // the variable checking is exactly the same as it would be in PlayerController.Update
             if (AutoReload.EmptyClipReload && !BraveUtility.isLoadingLevel && !GameManager.Instance.IsLoadingLevel)
             {
                 PlayerController[] players = GameManager.Instance.AllPlayers;
@@ -15,8 +15,9 @@ namespace AutoReload
                     if (player != null)
                     {
                         Gun currentGun = player.CurrentGun;
-                        //the commented out version is the original code from the GameUIRoot class for checking if the clip is empty (for showing the ui message 'reload')
-                        //if (currentGun != null && currentGun.ClipShotsRemaining == 0 && (currentGun.ClipCapacity > 1 || currentGun.ammo == 0) && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
+
+                        // the commented out version is the original code from the GameUIRoot class for checking if the clip is empty (for showing the ui message 'reload')
+                        // if (currentGun != null && currentGun.ClipShotsRemaining == 0 && (currentGun.ClipCapacity > 1 || currentGun.ammo == 0) && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
                         if (currentGun != null && currentGun.ClipShotsRemaining == 0 && currentGun.ClipCapacity > 1 && currentGun.ammo > 0 && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
                         {
                             Reload(player);
@@ -28,13 +29,16 @@ namespace AutoReload
 
         public static void Reload(PlayerController player)
         {
-            // if AutoReload should be disabled when you have the Rad Gun or Cog Of Battle equipped
-            if (AutoReload.UseExceptions && (player.CurrentGun.PickupObjectId == 556 || player.HasPassiveItem(135)))
+            if (AutoReload.UseExceptions)
             {
-                return;
+                // checks whether AutoReload should be disabled when you have the Rad Gun (normal or synergy version) or Cog Of Battle equipped or any other modded items that use the base game implementation
+                if ((player.CurrentGun && player.CurrentGun.LocalActiveReload) || (player.IsPrimaryPlayer && Gun.ActiveReloadActivated) || (!player.IsPrimaryPlayer && Gun.ActiveReloadActivatedPlayerTwo))
+                {
+                    return;
+                }
             }
 
-            //delegate is not simplified on purpose as this is the original code from the HandlePlayerInput method called in the Update method of the PlayerController class
+            // delegate is not simplified on purpose as this is the original code from the HandlePlayerInput method called in the Update method of the PlayerController class
             if (player.AcceptingAnyInput && player.AcceptingNonMotionInput)
             {
                 if (player.CurrentGun != null)

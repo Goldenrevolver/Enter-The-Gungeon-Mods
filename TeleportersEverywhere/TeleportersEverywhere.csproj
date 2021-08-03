@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C5291F64-37C9-4805-B0D6-CF973A4CA84D}</ProjectGuid>
+    <ProjectGuid>{57445610-0892-47C3-BE16-453172104123}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlankReminder</RootNamespace>
-    <AssemblyName>BlankReminder</AssemblyName>
+    <RootNamespace>TeleportersEverywhere</RootNamespace>
+    <AssemblyName>TeleportersEverywhere</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,7 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlankReminder.cs" />
+    <Compile Include="TeleportersEverywhere.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
