@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CuttingRoomFloor
 {
-    class BrittleBullets : PassiveItem
+    internal class BrittleBullets : PassiveItem
     {
         //based on FragileGunItem and FragileGunItemPiece
 
@@ -25,7 +25,7 @@ namespace CuttingRoomFloor
             ItemBuilder.AddSpriteToObject(itemName, resourceName, obj);
 
             //Ammonomicon entry variables
-            string shortDesc = "Risk/Reward";
+            string shortDesc = "Risk/ Reward";
             string longDesc = "Greatly increases firepower. All equipped ammunition will shatter upon receiving damage.\n\nIt takes an idiot to do cool things. That's why it's cool!";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
@@ -40,22 +40,56 @@ namespace CuttingRoomFloor
         public override void Pickup(PlayerController player)
         {
             base.Pickup(player);
-            player.OnReceivedDamage += loseAmmo;
+            player.OnReceivedDamage += LoseAmmo;
         }
 
         public override DebrisObject Drop(PlayerController player)
         {
             var drop = base.Drop(player);
-            player.OnReceivedDamage -= loseAmmo;
+
+            Cleanup(player);
+
             return drop;
         }
 
-        private void loseAmmo(PlayerController player)
+        protected override void OnDestroy()
         {
-            if (player && player.CurrentGun && !player.CurrentGun.InfiniteAmmo)
+            base.OnDestroy();
+
+            Cleanup(Owner);
+        }
+
+        private void Cleanup(PlayerController player)
+        {
+            if (player)
             {
-                player.CurrentGun.ammo = 0;
+                player.OnReceivedDamage -= LoseAmmo;
             }
+        }
+
+        private void LoseAmmo(PlayerController player)
+        {
+            if (player)
+            {
+                if (player.CurrentGun && !player.CurrentGun.InfiniteAmmo)
+                {
+                    EmptyGun(player, player.CurrentGun);
+                }
+
+                if (player.inventory != null && player.inventory.DualWielding && player.CurrentSecondaryGun && !player.CurrentSecondaryGun.InfiniteAmmo)
+                {
+                    EmptyGun(player, player.CurrentSecondaryGun);
+                }
+            }
+        }
+
+        private void EmptyGun(PlayerController player, Gun gun)
+        {
+            gun.ammo = 0;
+
+            gun.OnAmmoChanged?.Invoke(player, gun);
+
+            gun.PlayIdleAnimation();
         }
     }
 }

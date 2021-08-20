@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CuttingRoomFloor
 {
-    class TableTechHole : PassiveItem
+    internal class TableTechHole : PassiveItem
     {
         public static void Init()
         {
@@ -30,9 +30,10 @@ namespace CuttingRoomFloor
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "gr");
+            item.AddItemToSynergy("#PAPERWORK");
 
             //Set the rarity of the item
-            item.quality = PickupObject.ItemQuality.B;
+            item.quality = PickupObject.ItemQuality.C;
         }
 
         private GameObject objectToSpawn;
@@ -46,7 +47,8 @@ namespace CuttingRoomFloor
                 if (item is SpawnObjectPlayerItem)
                 {
                     SpawnObjectPlayerItem item2 = (SpawnObjectPlayerItem)item;
-                    if(item2.objectToSpawn != null && item2.objectToSpawn.name == "BlackHole")
+
+                    if (item2.objectToSpawn != null && item2.objectToSpawn.name == "BlackHole")
                     {
                         objectToSpawn = item2.objectToSpawn;
                         break;
@@ -54,22 +56,39 @@ namespace CuttingRoomFloor
                 }
             }
 
-            player.OnTableFlipped += handleFlip;
+            player.OnTableFlipped += HandleFlip;
         }
 
         public override DebrisObject Drop(PlayerController player)
         {
             var drop = base.Drop(player);
-            player.OnTableFlipped -= handleFlip;
+
+            Cleanup(player);
+
             return drop;
         }
 
-        private void handleFlip(FlippableCover table)
+        protected override void OnDestroy()
         {
-            GameManager.Instance.StartCoroutine(waitAndDestroy(table));
+            base.OnDestroy();
+
+            Cleanup(Owner);
         }
 
-        private IEnumerator waitAndDestroy(FlippableCover table)
+        private void Cleanup(PlayerController player)
+        {
+            if (player)
+            {
+                player.OnTableFlipped -= HandleFlip;
+            }
+        }
+
+        private void HandleFlip(FlippableCover table)
+        {
+            GameManager.Instance.StartCoroutine(WaitAndDestroy(table));
+        }
+
+        private IEnumerator WaitAndDestroy(FlippableCover table)
         {
             yield return null;
             DoSpawn(table);
@@ -80,33 +99,41 @@ namespace CuttingRoomFloor
         {
             Vector3 vector = table.transform.position;
             Vector3 vector2 = table.specRigidbody.UnitCenter;
+
             if (vector.y > 0f)
             {
                 vector2 += Vector3.up * 0.25f;
             }
+
             GameObject gameObject2 = Instantiate<GameObject>(objectToSpawn, vector2, Quaternion.identity);
             tk2dBaseSprite component4 = gameObject2.GetComponent<tk2dBaseSprite>();
+
             if (component4)
             {
                 component4.PlaceAtPositionByAnchor(vector2, tk2dBaseSprite.Anchor.MiddleCenter);
             }
+
             Vector2 vector3 = table.transform.position;
             vector3 = Quaternion.Euler(0f, 0f, 0f) * vector3;
             DebrisObject debrisObject = LootEngine.DropItemWithoutInstantiating(gameObject2, gameObject2.transform.position, vector3, 0, false, false, true, false);
+
             if (gameObject2.GetComponent<BlackHoleDoer>())
             {
                 gameObject2.GetComponent<BlackHoleDoer>().coreDuration = 2f;
                 debrisObject.PreventFallingInPits = true;
                 debrisObject.PreventAbsorption = true;
             }
+
             if (vector.y > 0f && debrisObject)
             {
                 debrisObject.additionalHeightBoost = -1f;
+
                 if (debrisObject.sprite)
                 {
                     debrisObject.sprite.UpdateZDepth();
                 }
             }
+
             debrisObject.IsAccurateDebris = true;
             debrisObject.Priority = EphemeralObject.EphemeralPriority.Critical;
             debrisObject.bounceCount = 0;

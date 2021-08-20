@@ -5,11 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Reflection;
 
 namespace CuttingRoomFloor
 {
-    class MonsterBall : PlayerItem
+    internal class MonsterBall : PlayerItem
     {
         public static void Init()
         {
@@ -104,14 +103,14 @@ namespace CuttingRoomFloor
             "42432592685e47c9941e339879379d3a", // robots_past_critter_2
             "4254a93fc3c84c0dbe0a8f0dddf48a5a", // robots_past_critter_3
             "76bc43539fc24648bff4568c75c686d1", // chicken
-            "1386da0f42fb4bcabc5be8feb16a7c38", // snake            
+            "1386da0f42fb4bcabc5be8feb16a7c38", // snake
             "fa6a7ac20a0e4083a4c2ee0d86f8bbf7", // red_caped_bullet_kin
             // Companions should also be excluded
             "c07ef60ae32b404f99e294a6f9acba75", // dog
             "7bd9c670f35b4b8d84280f52a5cc47f6", // cucco
             "998807b57e454f00a63d67883fcf90d6", // portable_turret
             "11a14dbd807e432985a89f69b5f9b31e", // phoenix
-            "6f9c28403d3248c188c391f5e40774c5", // turkey            
+            "6f9c28403d3248c188c391f5e40774c5", // turkey
             "705e9081261446039e1ed9ff16905d04", // cop
             "640238ba85dd4e94b3d6f68888e6ecb8", // cop_android
             "3a077fa5872d462196bb9a3cb1af02a3", // super_space_turtle
@@ -151,7 +150,7 @@ namespace CuttingRoomFloor
             "042edb1dfb614dc385d5ad1b010f2ee3", // blobuloid
             "fe3fe59d867347839824d5d9ae87f244", // poisbuloid
             "e61cab252cfb435db9172adc96ded75f", // poisbulon
-            "b8103805af174924b578c98e95313074", // poispulin            
+            "b8103805af174924b578c98e95313074", // poispulin
             "4538456236f64ea79f483784370bc62f", // fusebot
             "f155fd2759764f4a9217db29dd21b7eb", // mountain_cube
             "33b212b856b74ff09252bf4f2e8b8c57", // lead_cube
@@ -170,6 +169,7 @@ namespace CuttingRoomFloor
         public override void Pickup(PlayerController player)
         {
             base.Pickup(player);
+
             if (this.m_containsEnemy)
             {
                 base.IsCurrentlyActive = true;
@@ -179,8 +179,13 @@ namespace CuttingRoomFloor
 
         protected override void DoEffect(PlayerController user)
         {
-            if (GameManager.Instance.CurrentLevelOverrideState == GameManager.LevelOverrideState.END_TIMES) { return; }
+            if (GameManager.Instance.CurrentLevelOverrideState == GameManager.LevelOverrideState.END_TIMES)
+            {
+                return;
+            }
+
             DebrisObject debrisObject = user.DropActiveItem(this, 10f, false);
+
             if (debrisObject)
             {
                 MonsterBall component = debrisObject.GetComponent<MonsterBall>();
@@ -194,11 +199,17 @@ namespace CuttingRoomFloor
 
         protected override void DoActiveEffect(PlayerController user)
         {
-            if (GameManager.Instance.CurrentLevelOverrideState == GameManager.LevelOverrideState.END_TIMES) { return; }
+            if (GameManager.Instance.CurrentLevelOverrideState == GameManager.LevelOverrideState.END_TIMES)
+            {
+                return;
+            }
+
             DebrisObject debrisObject = user.DropActiveItem(this, 10f, false);
+
             if (debrisObject)
             {
                 AIActor[] currentActors = FindObjectsOfType<AIActor>();
+
                 if (currentActors != null && currentActors.Length > 0)
                 {
                     foreach (AIActor actor in currentActors)
@@ -213,6 +224,7 @@ namespace CuttingRoomFloor
                         }
                     }
                 }
+
                 MonsterBall component = debrisObject.GetComponent<MonsterBall>();
                 // component.spriteAnimator.Play("monster_ball_throw");
                 component.m_containsEnemy = this.m_containsEnemy;
@@ -232,36 +244,43 @@ namespace CuttingRoomFloor
             float distance = -1f;
             float nearestDistance = float.MaxValue;
             AIActor nearestEnemy = null;
+
             try
             {
                 List<AIActor> activeEnemies = obj.transform.position.GetAbsoluteRoom().GetActiveEnemies(RoomHandler.ActiveEnemyType.All);
-                if (activeEnemies == null) { goto SKIP; }
-                for (int i = 0; i < activeEnemies.Count; i++)
+
+                if (activeEnemies != null)
                 {
-                    AIActor enemy = activeEnemies[i];
-                    if (!enemy.IsMimicEnemy && enemy.healthHaver && !enemy.healthHaver.IsBoss && enemy.healthHaver.IsVulnerable)
+                    for (int i = 0; i < activeEnemies.Count; i++)
                     {
-                        if (!enemy.healthHaver.IsDead)
+                        AIActor enemy = activeEnemies[i];
+
+                        if (!enemy.IsMimicEnemy && enemy.healthHaver && !enemy.healthHaver.IsBoss && enemy.healthHaver.IsVulnerable)
                         {
-                            if (!BannedMonsterBallEnemies.Contains(enemy.EnemyGuid))
+                            if (!enemy.healthHaver.IsDead)
                             {
-                                float num = Vector2.Distance(obj.sprite.WorldCenter, enemy.CenterPosition);
-                                if (num < nearestDistance)
+                                if (!BannedMonsterBallEnemies.Contains(enemy.EnemyGuid))
                                 {
-                                    nearestDistance = num;
-                                    nearestEnemy = enemy;
+                                    float num = Vector2.Distance(obj.sprite.WorldCenter, enemy.CenterPosition);
+
+                                    if (num < nearestDistance)
+                                    {
+                                        nearestDistance = num;
+                                        nearestEnemy = enemy;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            SKIP:
+
                 if (nearestEnemy == null)
                 {
                     AIActor[] AllEnemiesOnFloor = FindObjectsOfType<AIActor>();
+
                     if (AllEnemiesOnFloor == null)
                     {
-                        if (component.m_Debug) { ETGModConsole.Log("[Monster_Ball] No Enemies present on the floor?"); }
+                        if (component.m_Debug) { Tools.Log("[Monster_Ball] No Enemies present on the floor?"); }
                     }
                     else
                     {
@@ -278,10 +297,18 @@ namespace CuttingRoomFloor
                         }
                     }
                 }
-                if (component.m_Debug && nearestEnemy == null) { ETGModConsole.Log("[Monster_Ball] activeEnemies is null."); }
+
+                if (component.m_Debug && nearestEnemy == null)
+                {
+                    Tools.Log("[Monster_Ball] activeEnemies is null.");
+                }
+
                 if (nearestEnemy && distance <= component.EnemySearchRadius)
                 {
-                    if (component.m_Debug) { ETGModConsole.Log("Monster_Ball: Attempting to capture: " + nearestEnemy.GetActorName()); }
+                    if (component.m_Debug)
+                    {
+                        Tools.Log("Monster_Ball: Attempting to capture: " + nearestEnemy.GetActorName());
+                    }
                     component.m_containsEnemy = true;
                     component.m_storedEnemyGuid = nearestEnemy.EnemyGuid;
                     component.m_wasBlackPhantom = nearestEnemy.IsBlackPhantom;
@@ -292,14 +319,16 @@ namespace CuttingRoomFloor
                     component.m_containsEnemy = false;
                     component.m_storedEnemyGuid = string.Empty;
                     component.m_wasBlackPhantom = false;
+
                     if (component.m_Debug && nearestEnemy == null)
                     {
-                        ETGModConsole.Log("[Monster_Ball] No enemies in room!");
+                        Tools.Log("[Monster_Ball] No enemies in room!");
                     }
                     else if (component.m_Debug && nearestEnemy != null && distance > component.EnemySearchRadius)
                     {
-                        ETGModConsole.Log("[Monster_Ball] No enemy in range!");
+                        Tools.Log("[Monster_Ball] No enemy in range!");
                     }
+
                     return;
                 }
             }
@@ -307,8 +336,9 @@ namespace CuttingRoomFloor
             {
                 if (component.m_Debug)
                 {
-                    ETGModConsole.Log("[Monster Ball] Exception in HandleTossedBallGrounded!");
+                    Tools.Log("[Monster Ball] Exception in HandleTossedBallGrounded!");
                 }
+
                 component.m_containsEnemy = false;
                 component.m_storedEnemyGuid = string.Empty;
                 component.m_wasBlackPhantom = false;
@@ -321,9 +351,10 @@ namespace CuttingRoomFloor
             MonsterBall component = obj.GetComponent<MonsterBall>();
             //component.spriteAnimator.Play("monster_ball_open");
             AIActor orLoadByGuid = EnemyDatabase.GetOrLoadByGuid(component.m_storedEnemyGuid);
+
             if (orLoadByGuid == null)
             {
-                if (m_Debug) { ETGModConsole.Log("[Monster_Ball] Tried to spawn an unknown AIActor! (Enemy GUID not found)"); }
+                if (m_Debug) { Tools.Log("[Monster_Ball] Tried to spawn an unknown AIActor! (Enemy GUID not found)"); }
                 component.m_containsEnemy = false;
                 component.m_wasBlackPhantom = false;
                 component.m_storedEnemyGuid = string.Empty;
@@ -331,6 +362,7 @@ namespace CuttingRoomFloor
                 component.ApplyCooldown(this.LastOwner);
                 return;
             }
+
             IntVector2 bestRewardLocation = obj.transform.position.GetAbsoluteRoom().GetBestRewardLocation(orLoadByGuid.Clearance, obj.sprite.WorldCenter, true);
             AIActor m_CachedEnemy = AIActor.Spawn(orLoadByGuid, bestRewardLocation, obj.transform.position.GetAbsoluteRoom(), true, AIActor.AwakenAnimationType.Default, true);
             // m_CachedEnemy.ApplyEffect(GameManager.Instance.Dungeon.sharedSettingsPrefab.DefaultPermanentCharmEffect, 1f, null);
@@ -355,9 +387,11 @@ namespace CuttingRoomFloor
             Destroy(targetEnemy.specRigidbody);
             yield return null;
             AkSoundEngine.PostEvent("Play_NPC_BabyDragun_Munch_01", obj.gameObject);
+
             while (elapsed < duration)
             {
                 elapsed += BraveTime.DeltaTime;
+
                 if (!targetSprite || !targetSprite.transform)
                 {
                     yield return null;
@@ -367,11 +401,14 @@ namespace CuttingRoomFloor
                     targetSprite.transform.localScale = Vector3.Lerp(Vector3.one, new Vector3(0.01f, 0.01f, 1f), elapsed / duration);
                     targetSprite.transform.position = Vector3.Lerp(startPos, startPos + finalOffset, elapsed / duration);
                 }
+
                 yield return null;
             }
+
             Destroy(targetSprite.gameObject);
 
             MonsterBall monsterBall = obj.GetComponent<MonsterBall>();
+
             if (monsterBall)
             {
                 if (monsterBall.AutoPickup)
@@ -381,12 +418,16 @@ namespace CuttingRoomFloor
                     monsterBall.Pickup(owner);
                 }
             }
+
             yield break;
         }
 
         private void MakeCompanion(PlayerController owner, AIActor targetActor, bool makeBlackPhantom, AIActor sourceCompanionData = null)
         {
-            if (sourceCompanionData == null) { sourceCompanionData = EnemyDatabase.GetOrLoadByGuid("3a077fa5872d462196bb9a3cb1af02a3"); }
+            if (sourceCompanionData == null)
+            {
+                sourceCompanionData = EnemyDatabase.GetOrLoadByGuid("3a077fa5872d462196bb9a3cb1af02a3");
+            }
 
             targetActor.behaviorSpeculator.MovementBehaviors.Add(sourceCompanionData.behaviorSpeculator.MovementBehaviors[0]);
 
@@ -425,6 +466,7 @@ namespace CuttingRoomFloor
 
             // Do needed setup for Companion system. (makes enemy able to go through sealed doors, not damage player, etc)
             companionController.Initialize(owner);
+
             // Make things that deal damage via contact damage more useful. (they normally don't damage other enemies on their own) :P
             if (ContactDamageDealers.Contains(targetActor.EnemyGuid))
             {
@@ -432,12 +474,17 @@ namespace CuttingRoomFloor
                 targetActor.CollisionDamage = 1f;
                 targetActor.CollisionDamageTypes = CoreDamageTypes.Electric;
             }
-            if (makeBlackPhantom) { targetActor.BecomeBlackPhantom(); }
+
+            if (makeBlackPhantom)
+            {
+                targetActor.BecomeBlackPhantom();
+            }
         }
 
         public void HandleCompanionPostProcessProjectile(Action<CompanionController, Projectile> orig, CompanionController self, Projectile obj)
         {
-            PlayerController m_owner = ReflectGetField<PlayerController>(typeof(CompanionController), "m_owner", self);
+            var m_owner = Tools.GetFieldValue<PlayerController>(typeof(CompanionController), "m_owner", self);
+
             if (obj)
             {
                 obj.collidesWithPlayer = false;
@@ -449,19 +496,21 @@ namespace CuttingRoomFloor
                 {
                     obj.baseData.damage *= BattleStandardItem.BattleStandardCompanionDamageMultiplier;
                 }
+
                 if (m_owner.CurrentGun && m_owner.CurrentGun.LuteCompanionBuffActive)
                 {
                     obj.baseData.damage *= 2f;
                     obj.RuntimeUpdateScale(1f / obj.AdditionalScaleMultiplier);
                     obj.RuntimeUpdateScale(1.75f);
                 }
-                // Prevent bullet modifiers from being applied to caught enemies. 
+
+                // Prevent bullet modifiers from being applied to caught enemies.
                 // This causes nasty bugs like flak bullets being applied to other enemies on the floor!
                 if (!string.IsNullOrEmpty(self.aiActor.name))
                 {
                     if (self.aiActor.name.ToLower().Contains("companionpet"))
                     {
-                        // Without the additioanl damage modifiers done from DoPostProcessProjectile Monster Ball enemies end up incredably weak.                        
+                        // Without the additioanl damage modifiers done from DoPostProcessProjectile Monster Ball enemies end up incredably weak.
                         if (!self.aiActor.IsBlackPhantom)
                         {
                             obj.baseData.damage *= 13f;
@@ -470,18 +519,13 @@ namespace CuttingRoomFloor
                         {
                             obj.baseData.damage *= 15f;
                         }
+
                         return;
                     }
                 }
+
                 m_owner.DoPostProcessProjectile(obj);
             }
         }
-
-        public static T ReflectGetField<T>(Type classType, string fieldName, object o = null)
-        {
-            FieldInfo field = classType.GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | ((o != null) ? BindingFlags.Instance : BindingFlags.Static));
-            return (T)field.GetValue(o);
-        }
     }
 }
-

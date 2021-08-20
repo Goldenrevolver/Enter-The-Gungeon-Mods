@@ -1,42 +1,71 @@
 ﻿using ItemAPI;
 using MonoMod.RuntimeDetour;
-using System.Reflection;
+using UnityEngine;
 
 namespace CuttingRoomFloor
 {
     public class CuttingRoomFloor : ETGModule
     {
-        public override void Init() { }
+        public static readonly string MOD_NAME = "Cutting Room Floor";
 
-        public override void Exit() { }
+        public static bool StarterSynergiesEnabled = false;
+
+        public override void Init()
+        {
+            StarterSynergiesEnabled = PlayerPrefs.GetInt("CuttingRoomFloorStarterSynergiesEnabled", 1) == 1;
+        }
+
+        public override void Exit()
+        {
+        }
 
         public override void Start()
         {
-            FakePrefabHooks.Init();
-            ItemBuilder.Init();
+            ETGModConsole.Commands.AddGroup("cuttingRoomFloor");
+            ETGModConsole.Commands.GetGroup("cuttingRoomFloor").AddUnit("StarterSynergiesEnabled", delegate (string[] e)
+            {
+                // flips the bool value
+                StarterSynergiesEnabled ^= true;
+                ETGModConsole.Log($"Starter synergies are now " + (StarterSynergiesEnabled ? "enabled" : "disabled") + ".");
+                PlayerPrefs.SetInt("CuttingRoomFloorStarterSynergiesEnabled", StarterSynergiesEnabled ? 1 : 0);
+                PlayerPrefs.Save();
+                SynergyHelper.UpdateStarterSynergyStatus(StarterSynergiesEnabled);
+            });
 
-            KatanaDash.Init();
-            CueBullets.Init();
-            ThirstForVengeance.Init();
-            OldJournal.Init();
-            //RingOfLightningResistance.Init();
-            HungryCaterpillar.Init();
-            TableTechHole.Init();
-            TableTechMirror.Init();
-            Thunderbolt.Init();
-            BrittleBullets.Init();
-            BubbleShield.Init();
-            MonsterBall.Init();
+            try
+            {
+                FakePrefabHooks.Init();
+                ItemBuilder.Init();
 
-            //e9fa6544000942a79ad05b6e4afb62db
+                KatanaDash.Init();
+                CueBullets.Init();
+                ThirstForVengeance.Init();
+                OldJournal.Init();
+                HungryCaterpillar.Init();
+                TableTechHole.Init();
+                TableTechMirror.Init();
+                Thunderbolt.Init();
+                BrittleBullets.Init();
+                BubbleShield.Init();
+                MonsterBall.Init();
 
-            new Hook(typeof(CaterpillarDevourHeartBehavior).GetMethod("IsHeartInRoom", BindingFlags.NonPublic | BindingFlags.Instance), typeof(HungryCaterpillar).GetMethod("IsHeartInRoom"));
-            new Hook(typeof(CaterpillarDevourHeartBehavior).GetMethod("MunchHeart", BindingFlags.NonPublic | BindingFlags.Instance), typeof(HungryCaterpillar).GetMethod("MunchHeart"));
+                //RingOfLightningResistance.Init();
 
-            new Hook(typeof(PlayerController).GetMethod("InitializeCallbacks", BindingFlags.NonPublic | BindingFlags.Instance), typeof(ThirstForVengeance).GetMethod("InitializeCallbacks"));
-            new Hook(typeof(PlayerController).GetMethod("RevengeRevive", BindingFlags.NonPublic | BindingFlags.Instance), typeof(ThirstForVengeance).GetMethod("NoRevengeFullHeal"));
+                new Hook(Tools.GetMethod(typeof(CaterpillarDevourHeartBehavior), "IsHeartInRoom"), typeof(HungryCaterpillar).GetMethod(nameof(HungryCaterpillar.IsHeartInRoom)));
+                new Hook(Tools.GetMethod(typeof(CaterpillarDevourHeartBehavior), "MunchHeart"), typeof(HungryCaterpillar).GetMethod(nameof(HungryCaterpillar.MunchHeart)));
 
-            new Hook(typeof(CompanionController).GetMethod("HandleCompanionPostProcessProjectile", BindingFlags.NonPublic | BindingFlags.Instance), typeof(MonsterBall).GetMethod("HandleCompanionPostProcessProjectile", BindingFlags.Public | BindingFlags.Instance), typeof(CompanionController));
+                new Hook(Tools.GetMethod(typeof(PlayerController), "RevengeRevive"), typeof(ThirstForVengeance).GetMethod(nameof(ThirstForVengeance.NoRevengeFullHeal)));
+
+                new Hook(Tools.GetMethod(typeof(CompanionController), "HandleCompanionPostProcessProjectile"), typeof(MonsterBall).GetMethod(nameof(MonsterBall.HandleCompanionPostProcessProjectile)), typeof(CompanionController));
+
+                SynergyHelper.EnableAndFixSynergies(StarterSynergiesEnabled);
+
+                Tools.Log($"{MOD_NAME} v{Metadata.Version} initialized, starter synergies: {(StarterSynergiesEnabled ? "enabled" : "disabled")}");
+            }
+            catch (System.Exception e)
+            {
+                Tools.LogError("Exception in Start: " + e);
+            }
         }
     }
 }

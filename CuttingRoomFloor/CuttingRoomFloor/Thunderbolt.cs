@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CuttingRoomFloor
 {
-    class Thunderbolt : AffectEnemiesInRoomItem
+    internal class Thunderbolt : AffectEnemiesInRoomItem
     {
         public static void Init()
         {
@@ -27,40 +27,43 @@ namespace CuttingRoomFloor
 
             //Ammonomicon entry variables
             string shortDesc = "Shrinks And Dazes";
-            string longDesc = "Shrinks and dazes enemies for a brief period of time.\n\nSaid to contain the soul of a famous Gungeoneer.";
+            string longDesc = "Shrinks and dazes enemies for a brief period of time, also increasing damage and knockback dealt to them (even shrink immune ones).\n\nSaid to contain the soul of a famous Gungeoneer.";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "gr");
-            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, 400f);
+            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, 300f);
 
             //Set the rarity of the item
             item.quality = PickupObject.ItemQuality.C;
+
+            item.AffectsBosses = true;
         }
-        
+
         public Vector2 TargetScale = new Vector2(0.5f, 0.5f);
-        
+
         public float ShrinkTime = 0.1f;
-        
+
         public float HoldTime = 3f;
-        
+
         public float RegrowTime = 3f;
-        
+
         public float DamageMultiplier = 2f;
-        
+
         public bool DepixelatesTargets = true;
 
-        private List<AIActor> affectedEnemies = new List<AIActor>();
+        private readonly List<AIActor> affectedEnemies = new List<AIActor>();
 
         protected override void DoEffect(PlayerController user)
         {
             base.DoEffect(user);
+
             GameManager.Instance.StartCoroutine(this.HandleTime());
         }
 
         protected override void AffectEnemy(AIActor target)
         {
-            if(target != null && target.healthHaver.IsVulnerable && !BannedThunderboltEnemies.Contains(target.EnemyGuid))
+            if (target && target.healthHaver && target.healthHaver.IsVulnerable && !BannedThunderboltEnemies.Contains(target.EnemyGuid))
             {
                 affectedEnemies.Add(target);
                 GameManager.Instance.StartCoroutine(this.HandleShrink(target));
@@ -70,10 +73,12 @@ namespace CuttingRoomFloor
         private IEnumerator HandleTime()
         {
             this.m_isCurrentlyActive = true;
+
             while (affectedEnemies.Any())
             {
                 yield return null;
             }
+
             this.m_isCurrentlyActive = false;
         }
 
@@ -81,33 +86,45 @@ namespace CuttingRoomFloor
         {
             AkSoundEngine.PostEvent("Play_OBJ_lightning_flash_01", base.gameObject);
             float elapsed = 0f;
+
             if (target == null)
             {
                 affectedEnemies.Remove(target);
                 yield break;
             }
+
             Vector2 startScale = target.EnemyScale;
             int cachedLayer = target.gameObject.layer;
             int cachedOutlineLayer = cachedLayer;
-            if (this.DepixelatesTargets)
+
+            if (this.DepixelatesTargets && target.healthHaver && !target.healthHaver.IsBoss)
             {
                 target.gameObject.layer = LayerMask.NameToLayer("Unpixelated");
                 cachedOutlineLayer = SpriteOutlineManager.ChangeOutlineLayer(target.sprite, LayerMask.NameToLayer("Unpixelated"));
             }
-            target.ClearPath();
-            DazedBehavior db = new DazedBehavior();
-            db.PointReachedPauseTime = 0.5f;
-            db.PathInterval = 0.5f;
+
             if (target.knockbackDoer)
             {
                 target.knockbackDoer.weight /= 3f;
             }
+
             if (target.healthHaver)
             {
                 target.healthHaver.AllDamageMultiplier *= this.DamageMultiplier;
             }
-            target.behaviorSpeculator.OverrideBehaviors.Insert(0, db);
-            target.behaviorSpeculator.RefreshBehaviors();
+
+            DazedBehavior db = new DazedBehavior();
+
+            if (!target.healthHaver.IsBoss)
+            {
+                target.ClearPath();
+                db.PointReachedPauseTime = 0.5f;
+                db.PathInterval = 0.5f;
+
+                target.behaviorSpeculator.OverrideBehaviors.Insert(0, db);
+                target.behaviorSpeculator.RefreshBehaviors();
+            }
+
             while (elapsed < this.ShrinkTime)
             {
                 if (target == null)
@@ -115,24 +132,36 @@ namespace CuttingRoomFloor
                     affectedEnemies.Remove(target);
                     yield break;
                 }
+
                 elapsed += target.LocalDeltaTime;
-                target.EnemyScale = Vector2.Lerp(startScale, this.TargetScale, elapsed / this.ShrinkTime);
+
+                if (!target.healthHaver.IsBoss)
+                {
+                    target.EnemyScale = Vector2.Lerp(startScale, this.TargetScale, elapsed / this.ShrinkTime);
+                }
+
                 yield return null;
             }
+
             elapsed = 0f;
+
             while (elapsed < this.HoldTime)
             {
                 this.m_activeElapsed = elapsed;
                 this.m_activeDuration = this.HoldTime;
+
                 if (target == null)
                 {
                     affectedEnemies.Remove(target);
                     yield break;
                 }
+
                 elapsed += target.LocalDeltaTime;
                 yield return null;
             }
+
             elapsed = 0f;
+
             while (elapsed < this.RegrowTime)
             {
                 if (target == null)
@@ -140,48 +169,47 @@ namespace CuttingRoomFloor
                     affectedEnemies.Remove(target);
                     yield break;
                 }
+
                 elapsed += target.LocalDeltaTime;
-                target.EnemyScale = Vector2.Lerp(this.TargetScale, startScale, elapsed / this.RegrowTime);
+
+                if (!target.healthHaver.IsBoss)
+                {
+                    target.EnemyScale = Vector2.Lerp(this.TargetScale, startScale, elapsed / this.RegrowTime);
+                }
                 yield return null;
             }
+
             if (target == null)
             {
                 affectedEnemies.Remove(target);
                 yield break;
             }
+
             if (target.knockbackDoer)
             {
                 target.knockbackDoer.weight *= 3f;
             }
+
             if (target.healthHaver)
             {
                 target.healthHaver.AllDamageMultiplier /= this.DamageMultiplier;
             }
-            target.behaviorSpeculator.OverrideBehaviors.Remove(db);
-            target.behaviorSpeculator.RefreshBehaviors();
-            if (this.DepixelatesTargets)
+
+            if (!target.healthHaver.IsBoss)
+            {
+                target.behaviorSpeculator.OverrideBehaviors.Remove(db);
+                target.behaviorSpeculator.RefreshBehaviors();
+            }
+
+            if (this.DepixelatesTargets && target.healthHaver && !target.healthHaver.IsBoss)
             {
                 target.gameObject.layer = cachedLayer;
                 SpriteOutlineManager.ChangeOutlineLayer(target.sprite, cachedOutlineLayer);
             }
+
             affectedEnemies.Remove(target);
             yield break;
         }
-
-        //private List<AIActor> filterThunderboltEnemies(List<AIActor> actors, string[] filter)
-        //{
-        //    if (actors == null || filter == null)
-        //        return actors;
-        //    List<AIActor> returnV = new List<AIActor>();
-        //    foreach (var item in actors)
-        //    {
-        //        if (!filter.Contains(item.EnemyGuid))
-        //        {
-        //            returnV.Add(item);
-        //        }
-        //    }
-        //    return returnV;
-        //}
 
         public static string[] BannedThunderboltEnemies =
         {

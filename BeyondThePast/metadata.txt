@@ -1,0 +1,7 @@
+Name: BeyondThePast
+Version: 1.0
+Author: Goldenrevolver
+
+DLL: BeyondThePast.dll
+
+Depends: Base 0.2

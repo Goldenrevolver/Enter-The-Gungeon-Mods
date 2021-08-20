@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CuttingRoomFloor
 {
-    class BubbleShield
+    internal class BubbleShield
     {
         public static void Init()
         {
@@ -24,7 +24,7 @@ namespace CuttingRoomFloor
             ItemBuilder.AddSpriteToObject(itemName, resourceName, obj);
 
             //Ammonomicon entry variables
-            string shortDesc = "Don't swallow it";
+            string shortDesc = "Don't Swallow It";
             string longDesc = "Extremely elastic, severely sturdy and ridiculously regenerative, this magic bubble gum can be both a life saver as well as a pastime while exploring the dungeon.";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.

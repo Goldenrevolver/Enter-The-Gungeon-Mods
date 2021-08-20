@@ -35,6 +35,7 @@ namespace ItemAPI
         public static void MarkAsFakePrefab(GameObject obj)
         {
             ExistingFakePrefabs.Add(obj);
+            DontDestroyOnLoad(obj);
         }
 
         /// <summary>
@@ -56,14 +57,7 @@ namespace ItemAPI
                 obj.SetActive(true);
 
             ExistingFakePrefabs.Add(fakeprefab);
-            if (already_fake)
-            {
-                //Tools.Print($"Fake prefab '{obj}' cloned as new fake prefab");
-            }
-            else
-            {
-                //Tools.Print($"Fake prefab '{obj}' cloned as new fake prefab");
-            }
+            DontDestroyOnLoad(fakeprefab);
             return fakeprefab;
         }
 
@@ -77,12 +71,10 @@ namespace ItemAPI
         {
             if (o is GameObject && ExistingFakePrefabs.Contains((GameObject)o))
             {
-                //Tools.Print("Spawning fake prefab: " + o.name);
                 ((GameObject)new_o).SetActive(true);
             }
             else if (o is Component && ExistingFakePrefabs.Contains(((Component)o).gameObject))
             {
-                //Tools.Print("Spawning fake prefab: " + o.name);
                 ((Component)new_o).gameObject.SetActive(true);
             }
             return new_o;

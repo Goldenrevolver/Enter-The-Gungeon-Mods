@@ -1,0 +1,149 @@
+{
+    "metadata": {
+        "name": "Cutting Room Floor",
+        "version": "",
+        "url": "https://modworkshop.net/mod/25339"
+    },
+    "items": {
+        "gr:katana_dash": {
+            "name": "Katana Dash",
+            "notes": "On use: Dash into a direction turning invisible and invincible. At the end of the dash damage everything that was in the path. Can be used up to three times each room."
+        },
+        "gr:thirst_for_vengeance": {
+            "name": "Thirst For Vengeance",
+            "notes": "+5% rate of fire for every missing half a heart (or every missing armor from the starting 6 as Robot). You enter a bleedout state on death for a short time. If you kill an enemy during the bleedout state you revive and heal for a small amount."
+		    },
+        "gr:hungry_caterpillar": {
+            "name": "Hungry Caterpillar",
+            "notes": "Companion that follows you around and eats heart pickups. Once it has eaten 2 full hearts transforms into Fairy Wings."
+        },
+        "gr:cue_bullets": {
+            "name": "Cue Bullets",
+            "notes": "Enemies are launched backwards on death, and deal damage to other enemies they hit."
+        },
+        "gr:old_journal": {
+            "name": "Old Journal",
+            "notes": "Not taking damage slightly increases the chance for a room reward."
+		    },
+        "gr:monster_ball": {
+            "name": "Monster Ball",
+            "notes": "On use: Captures an enemy and spawns it as a permanently charmed follower upon release."
+        },
+        "gr:table_tech_hole": {
+            "name": "Table Tech Hole",
+            "notes": "Flipping a table creates a black hole for a short duration."
+        },
+        "gr:table_tech_mirror": {
+            "name": "Table Tech Mirror",
+            "notes": "Flipped tables reflect bullets back at the enemy."
+        },
+        "gr:brittle_bullets": {
+            "name": "Brittle Bullets",
+            "notes": "+75% damage, but you lose all ammo for the current gun when getting hit."
+        },
+        "gr:bubble_shield": {
+            "name": "Bubble Shield",
+            "notes": "On use: Deflects bullets for a few seconds. Recharges once every two rooms cleared."
+		    },
+        "gr:thunderbolt": {
+            "name": "Thunderbolt",
+            "notes": "On use: Shrinks and dazes enemies for a brief period of time, increasing damage dealt to them (damage increase applies to shrink immune targets)."
+        },
+		    "fairy_wings": {
+            "name": "Fairy Wings",
+            "notes": "Grants flight. Rolling leaves pink slime that temporarily charms enemies."
+        }
+    },
+  "synergies": {
+        "#DEMONHUNTER": {
+          "notes": "The Crossbow deals 50% bonus damage against jammed enemies, stacking with Silver Bullets, for a total of 487.5% damage dealt."
+        },
+        "#TRASHJUNKAN": {
+          "notes": "Junkan's attacks also poison hit foes."
+        },
+        "#NANOMACHINES": {
+          "notes": "Nanomachines effect triggers more often and after triggering it you deal double damage for a short amount of time."
+        },
+        "#HEARTUNLOCKET": {
+          "notes": "Grants an empty heart container."
+        },
+        "#WORLDWAR": {
+          "notes": "The M1 also makes you invisible when you reload from an empty magazine."
+        },
+        "#DOUBLECHESTFRIENDS": {
+          "notes": "The chance of Ring Of Chest Friendship to give you a chest as a room reward is increased by a further 25%."
+        },
+        "#MENINBLACK": {
+          "notes": "When Sunglasses' effect triggers, Grasschopper instantly reloads and fires a projectile with increased size and damage."
+        },
+        "#THESTARWAR": {
+          "notes": "Fully emptying either gun's magazine immediately switches to its fully reloaded partner gun."
+        },
+        "#BOWLING": {
+          "notes": "Hitting enemies at least 3 three times with one shot from Serious Cannon recovers 1 ammo when it dissipates."
+        },
+        "#MOONRAKING_IT_IN": {
+          "notes": "Changes Moonscraper into a special form."
+        },
+        "#PLANPAIN": {
+          "notes": "Changes Banana into a special form."
+        },
+        "#HL2ROCKET": {
+          "notes": "RC Rocket's rockets gain increased size and damage the further they travel."
+        },
+        "#PLATINUMGOLD": {
+          "notes": "Killing an enemy spawns 1-5 extra Shells in addition to the enemy's other loot."
+        },
+        "#DOUBLEMOLOTOV": {
+          "notes": "Molotov Launcher now launches a volley of three molotovs."
+        },
+        "#MASTEROFUNLOCKING": {
+          "notes": "Trusty Lockpicks turn golden, increasing their unlock chance from 50% to 100%."
+        },
+        "#ROBOTHANDS": {
+          "notes": "Allows to dual wield both of robot's arms."
+        },
+        "#SUPPLYDROP": {
+          "notes": "Spawns two additional supply crates containing random room rewards."
+        },
+        "#HEROOFCHICKEN": {
+          "notes": "Blasphemy is still able to fire its sword projectile even when you are not at full health (or are the Robot)."
+        },
+        "#EVENACHILD": {
+          "notes": "Dodge rolling now reloads 6 bullets to the Dart Gun instead of one."
+        },
+        "#TRUEHERO": {
+          "notes": "Number Two's effects now also apply when not alone."
+        },
+        "#DOGANDWOLF": {
+          "notes": "Additionally spawns two smaller versions of the two canine companions (just visual)."
+        },
+        "Hidden Tech Shotgun": {
+          "notes": "Flipping a table now shoots the projectiles of the Big Shotgun."
+        },
+        "Shard Blade": {
+          "notes": "Sprung has an additional random trigger, doubling the chances of turning into Windgunner."
+        },
+        "High Energy": {
+          "notes": "If an enemy is killed by the Combined Rifle's energy ball, it release a burst of The Fat Line's shots upon dissipating."
+        },
+        "#RIOTGEAR": {
+          "notes": "Damage dealt to the police officer is reduced by 50%."
+        },
+        "#LOWER_CASE_R": {
+          "notes": "Changes Lower Case r into a special form with 25% increased damage."
+        },
+        "Harmless Fun": {
+          "notes": "Both guns deal 25% increased damage."
+        },
+        "Irradiated Ones": {
+          "notes": "The chance to shoot poison bullets is significantly increased."
+        },
+        "Grasscutter": {
+          "notes": "While holding Alien Engine, Grasschopper orbits you. When you dodge a bullet it fires a free shot at the nearest enemy."
+        },
+        "20/20 Tears": {
+          "notes": "Changes Tear Jerker into a special form."
+        }
+  }
+}

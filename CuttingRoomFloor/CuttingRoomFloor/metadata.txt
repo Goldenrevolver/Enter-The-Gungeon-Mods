@@ -1,0 +1,7 @@
+Name: CuttingRoomFloor
+Version: 4.0
+Author: Goldenrevolver
+
+DLL: CuttingRoomFloor.dll
+
+Depends: Base 0.2
