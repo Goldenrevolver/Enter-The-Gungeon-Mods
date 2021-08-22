@@ -9,23 +9,21 @@ namespace BeyondThePast
     public class MasterOfUnlocking : SpawnItemOnRoomClearItem
     {
         public static int MasterOfUnlockingID;
+        private static readonly string theItemName = "Master of Unlocking";
 
         public static void Register()
         {
-            //The name of the item
-            string itemName = "Master of Unlocking";
-
             //Refers to an embedded png in the project. Make sure to embed your resources! Google it
             string resourceName = "BeyondThePast/Resources/Master_of_Unlocking";
 
             //Create new GameObject
-            GameObject obj = new GameObject(itemName);
+            GameObject obj = new GameObject(theItemName);
 
             //Add a PassiveItem component to the object
             var item = obj.AddComponent<MasterOfUnlocking>();
 
             //Adds a sprite component to the object and adds your texture to the item sprite collection
-            ItemBuilder.AddSpriteToObject(itemName, resourceName, obj);
+            ItemBuilder.AddSpriteToObject(theItemName, resourceName, obj);
 
             //Ammonomicon entry variables
             string shortDesc = "Play Well, Get Keys";
@@ -36,16 +34,6 @@ namespace BeyondThePast
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "gr");
             MasterOfUnlockingID = item.PickupObjectId;
 
-            foreach (var synergy in GameManager.Instance.SynergyManager.synergies)
-            {
-                if (synergy != null && synergy.NameKey == "#MASTEROFUNLOCKING")
-                {
-                    synergy.MandatoryItemIDs = new List<int>() { 356 };
-                    synergy.OptionalItemIDs = new List<int>() { 140, item.PickupObjectId };
-                    synergy.RequiresAtLeastOneGunAndOneItem = false;
-                }
-            }
-
             var original = PickupObjectDatabase.GetById(140) as SpawnItemOnRoomClearItem;
 
             foreach (var publicField in typeof(SpawnItemOnRoomClearItem).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
@@ -55,6 +43,52 @@ namespace BeyondThePast
 
             //Set the rarity of the item
             item.quality = PickupObject.ItemQuality.EXCLUDED;
+        }
+
+        public static void HandleSynergy(AdvancedSynergyEntry synergy)
+        {
+            if (synergy.NameKey == "#KEYWITNESS" || synergy.NameKey == "#MASTEROFUNLOCKING")
+            {
+                synergy.RequiresAtLeastOneGunAndOneItem = false;
+
+                if (synergy.OptionalItemIDs == null)
+                {
+                    synergy.OptionalItemIDs = new List<int>();
+                }
+
+                if (!synergy.OptionalItemIDs.Contains(MasterOfUnlockingID))
+                {
+                    synergy.OptionalItemIDs.Add(MasterOfUnlockingID);
+                }
+                else
+                {
+                    return;
+                }
+
+                if (!synergy.OptionalItemIDs.Contains(140))
+                {
+                    synergy.OptionalItemIDs.Add(140);
+                }
+
+                if (synergy.MandatoryItemIDs.Count != 2)
+                {
+                    ETGModConsole.Log(SynergyHelper.GenerateModEditedSynergyProblem(synergy, "Master of Unlocking", theItemName));
+                }
+
+                synergy.MandatoryItemIDs.RemoveAll((int x) => x == 140);
+            }
+            else
+            {
+                if (synergy.OptionalItemIDs != null && synergy.OptionalItemIDs.Contains(140) && !synergy.OptionalItemIDs.Contains(MasterOfUnlockingID))
+                {
+                    synergy.OptionalItemIDs.Add(MasterOfUnlockingID);
+                }
+
+                if (synergy.MandatoryItemIDs != null && synergy.MandatoryItemIDs.Contains(140))
+                {
+                    ETGModConsole.Log(SynergyHelper.GenerateModdedSynergyProblem(synergy, "Master of Unlocking", theItemName));
+                }
+            }
         }
 
         private StatModifier statBuff;

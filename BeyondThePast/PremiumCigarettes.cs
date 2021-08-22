@@ -1,4 +1,5 @@
 ﻿using ItemAPI;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BeyondThePast
@@ -6,23 +7,21 @@ namespace BeyondThePast
     public class PremiumCigarettes : SpawnObjectPlayerItem
     {
         public static int PremiumCigarettesID;
+        private static readonly string theItemName = "Premium Cigarettes";
 
         public static void Register()
         {
-            //The name of the item
-            string itemName = "Premium Cigarettes";
-
             //Refers to an embedded png in the project. Make sure to embed your resources! Google it
             string resourceName = "BeyondThePast/Resources/Cigarettes";
 
             //Create new GameObject
-            GameObject obj = new GameObject(itemName);
+            GameObject obj = new GameObject(theItemName);
 
             //Add a PassiveItem component to the object
             var item = obj.AddComponent<PremiumCigarettes>();
 
             //Adds a sprite component to the object and adds your texture to the item sprite collection
-            ItemBuilder.AddSpriteToObject(itemName, resourceName, obj);
+            ItemBuilder.AddSpriteToObject(theItemName, resourceName, obj);
 
             //Ammonomicon entry variables
             string shortDesc = "Hazardous To Health";
@@ -46,6 +45,50 @@ namespace BeyondThePast
 
             //Set the rarity of the item
             item.quality = PickupObject.ItemQuality.EXCLUDED;
+        }
+
+        public static void HandleSynergy(AdvancedSynergyEntry synergy)
+        {
+            if (synergy.NameKey == "#COFFEEANDCIGS")
+            {
+                if (synergy.OptionalItemIDs == null)
+                {
+                    synergy.OptionalItemIDs = new List<int>();
+                }
+
+                if (!synergy.OptionalItemIDs.Contains(PremiumCigarettesID))
+                {
+                    synergy.OptionalItemIDs.Add(PremiumCigarettesID);
+                }
+                else
+                {
+                    return;
+                }
+
+                if (!synergy.OptionalItemIDs.Contains(203))
+                {
+                    synergy.OptionalItemIDs.Add(203);
+                }
+
+                if (synergy.MandatoryItemIDs.Count != 2)
+                {
+                    ETGModConsole.Log(SynergyHelper.GenerateModEditedSynergyProblem(synergy, "Cigarettes", theItemName));
+                }
+
+                synergy.MandatoryItemIDs.RemoveAll((int x) => x == 203);
+            }
+            else
+            {
+                if (synergy.OptionalItemIDs != null && synergy.OptionalItemIDs.Contains(203) && !synergy.OptionalItemIDs.Contains(PremiumCigarettesID))
+                {
+                    synergy.OptionalItemIDs.Add(PremiumCigarettesID);
+                }
+
+                if (synergy.MandatoryItemIDs != null && synergy.MandatoryItemIDs.Contains(203))
+                {
+                    ETGModConsole.Log(SynergyHelper.GenerateModdedSynergyProblem(synergy, "Cigarettes", theItemName));
+                }
+            }
         }
 
         private readonly bool damageIncreasesWithEveryUse = false;

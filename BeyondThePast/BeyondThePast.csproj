@@ -84,6 +84,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompassItem.cs" />
+    <Compile Include="LonelinessCookie.cs" />
+    <Compile Include="FakeHeroBandana.cs" />
+    <Compile Include="OldBulletsBlessing.cs" />
     <Compile Include="PackLeader.cs" />
     <Compile Include="EmbarrassingPhoto.cs" />
     <Compile Include="EmptyBriefcase.cs" />
@@ -101,6 +105,8 @@
     <Compile Include="ItemAPI\SpriteBuilder.cs" />
     <Compile Include="RecycleItem.cs" />
     <Compile Include="SupplySupport.cs" />
+    <Compile Include="SynergyHelper.cs" />
+    <Compile Include="WarningItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\example_item_sprite.png" />
@@ -119,6 +125,19 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Master_of_Unlocking.png" />
     <EmbeddedResource Include="Resources\Pack_Leader.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Old_Bullets_Blessing.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Fake_Hero_Bandana.png" />
+    <EmbeddedResource Include="Resources\Loneliness_Cookie.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Warning_Item.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Compass.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

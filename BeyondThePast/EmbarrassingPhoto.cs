@@ -6,27 +6,25 @@ namespace BeyondThePast
     public class EmbarrassingPhoto : RagePassiveItem
     {
         public static int EmbarrassingPhotoID;
+        private static readonly string theItemName = "Embarrassing Photo";
 
         public static void Register()
         {
-            //The name of the item
-            string itemName = "Embarrassing Photo";
-
             //Refers to an embedded png in the project. Make sure to embed your resources! Google it
             string resourceName = "BeyondThePast/Resources/Group_Photo";
 
             //Create new GameObject
-            GameObject obj = new GameObject(itemName);
+            GameObject obj = new GameObject(theItemName);
 
             //Add a PassiveItem component to the object
             var item = obj.AddComponent<EmbarrassingPhoto>();
 
             //Adds a sprite component to the object and adds your texture to the item sprite collection
-            ItemBuilder.AddSpriteToObject(itemName, resourceName, obj);
+            ItemBuilder.AddSpriteToObject(theItemName, resourceName, obj);
 
             //Ammonomicon entry variables
             string shortDesc = "Why Did I Do That...";
-            string longDesc = "A photo that the Convict brought with her to the Gungeon. Deal extra damage for a short time after getting hit.\n\n She often looks at the photo, longing to once again change her past.";
+            string longDesc = "A photo that the Convict brought with her to the Gungeon. Deal extra damage for a short time after getting hit.\n\nShe often looks at the photo, longing to once again change her past.";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
@@ -42,6 +40,19 @@ namespace BeyondThePast
 
             //Set the rarity of the item
             item.quality = PickupObject.ItemQuality.EXCLUDED;
+        }
+
+        public static void HandleSynergy(AdvancedSynergyEntry synergy)
+        {
+            if (synergy.OptionalItemIDs != null && synergy.OptionalItemIDs.Contains(353) && !synergy.OptionalItemIDs.Contains(EmbarrassingPhotoID))
+            {
+                synergy.OptionalItemIDs.Add(EmbarrassingPhotoID);
+            }
+
+            if (synergy.MandatoryItemIDs != null && synergy.MandatoryItemIDs.Contains(353))
+            {
+                ETGModConsole.Log(SynergyHelper.GenerateModdedSynergyProblem(synergy, "Supply Drop", theItemName));
+            }
         }
     }
 }

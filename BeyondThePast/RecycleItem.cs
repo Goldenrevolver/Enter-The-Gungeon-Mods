@@ -1,6 +1,7 @@
 ﻿using ItemAPI;
 using MonoMod.RuntimeDetour;
 using System;
+using System.Collections;
 using System.Reflection;
 using UnityEngine;
 
@@ -38,6 +39,38 @@ namespace BeyondThePast
 
             //Set the rarity of the item
             item.quality = PickupObject.ItemQuality.EXCLUDED;
+        }
+
+        public override void Pickup(PlayerController player)
+        {
+            if (this.m_pickedUp)
+            {
+                return;
+            }
+
+            player.StartCoroutine(CheckForHand());
+
+            base.Pickup(player);
+        }
+
+        private IEnumerator CheckForHand()
+        {
+            while (true)
+            {
+                if (Owner?.inventory?.AllGuns != null)
+                {
+                    foreach (var item in Owner.inventory.AllGuns)
+                    {
+                        if (item.PickupObjectId == 576)
+                        {
+                            item.PreventStartingOwnerFromDropping = true;
+                            yield break;
+                        }
+                    }
+                }
+
+                yield return new WaitForSeconds(1);
+            }
         }
 
         public static void SetupHook()

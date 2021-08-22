@@ -27,7 +27,7 @@ namespace BeyondThePast
 
             //Ammonomicon entry variables
             string shortDesc = "Strength Of The Pack";
-            string longDesc = "Increases movement speed by 0.1 for every companion you have.";
+            string longDesc = "Increases movement speed by 0.25 for every companion you have.";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
@@ -55,6 +55,7 @@ namespace BeyondThePast
                 modifyType = StatModifier.ModifyMethod.ADDITIVE,
                 amount = 0f
             };
+
             player.ownerlessStatModifiers.Add(statBuff);
             player.stats.RecalculateStats(player, false, false);
 
@@ -76,6 +77,7 @@ namespace BeyondThePast
                         if (item.PickupObjectId == 62)
                         {
                             item.InfiniteAmmo = true;
+                            item.PreventStartingOwnerFromDropping = true;
                             yield break;
                         }
                     }
@@ -98,7 +100,7 @@ namespace BeyondThePast
                     }
                 }
 
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(0.5f);
             }
         }
 
@@ -106,7 +108,7 @@ namespace BeyondThePast
         {
             if (Owner)
             {
-                statBuff.amount = 0.10f * newValue;
+                statBuff.amount = 0.25f * newValue;
                 Owner.stats.RecalculateStats(Owner, false, false);
             }
         }

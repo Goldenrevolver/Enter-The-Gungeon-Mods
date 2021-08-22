@@ -23,6 +23,8 @@ namespace BeyondThePast
         {
         }
 
+        // TODO add all custom items to all vanilla synergies of the base item
+
         public override void Start()
         {
             ETGModConsole.Commands.AddGroup("beyondThePast");
@@ -64,6 +66,11 @@ namespace BeyondThePast
                     LoadMarineModule();
                 }
 
+                // no condition for cultist (I'm not that evil)
+                LoadCultistModule();
+
+                SynergyHelper.Help();
+
                 new Hook(typeof(PlayerController).GetMethod("InitializeInventory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), typeof(BeyondThePast).GetMethod(nameof(BeyondThePast.OverrideStartingInventory)));
 
                 string output = $"{MOD_NAME} v{Metadata.Version} initialized";
@@ -83,12 +90,24 @@ namespace BeyondThePast
 
         public static void OverrideStartingInventory(Action<PlayerController> orig, PlayerController self)
         {
-            List<string> defaultCharNames = new List<string>() { "PlayerConvict(Clone)", "PlayerMarine(Clone)", "PlayerGuide(Clone)", "PlayerRogue(Clone)", "PlayerBullet(Clone)", "PlayerRobot(Clone)" };
+            List<string> defaultCharNames = new List<string>() { "PlayerConvict(Clone)", "PlayerMarine(Clone)", "PlayerGuide(Clone)", "PlayerRogue(Clone)", "PlayerBullet(Clone)", "PlayerRobot(Clone)", "PlayerCoopCultist(Clone)" };
+
+            // this also affects custom characters, but that's intended
+            if (ModEnabled && self.characterIdentity == PlayableCharacters.CoopCultist && GameManager.Instance.CurrentGameType == GameManager.GameType.SINGLE_PLAYER)
+            {
+                self.startingPassiveItemIds = new List<int>() { };
+                self.startingActiveItemIds = new List<int>() { WarningItem.WarningItemID };
+                self.startingGunIds = new List<int>() { };
+                self.startingAlternateGunIds = new List<int>() { };
+
+                orig(self);
+                return;
+            }
 
             // if the mod is disabled, return
             // if it's a custom character. don't mess with it
-            // if you have not beaten that character's past, don't switch
-            if (!ModEnabled || !defaultCharNames.Contains(self.name) || !GameStatsManager.Instance.GetCharacterSpecificFlag(self.characterIdentity, CharacterSpecificGungeonFlags.KILLED_PAST))
+            // if you have not beaten that character's past, don't switch (excluding cultist)
+            if (!ModEnabled || !defaultCharNames.Contains(self.name) || (!GameStatsManager.Instance.GetCharacterSpecificFlag(self.characterIdentity, CharacterSpecificGungeonFlags.KILLED_PAST) && self.name != "PlayerCoopCultist(Clone)"))
             {
                 orig(self);
                 return;
@@ -97,7 +116,7 @@ namespace BeyondThePast
             switch (self.characterIdentity)
             {
                 case PlayableCharacters.Pilot:
-                    self.startingPassiveItemIds = new List<int>() { 187, 473, 491, MasterOfUnlocking.MasterOfUnlockingID };
+                    self.startingPassiveItemIds = new List<int>() { 187, 473, 491, MasterOfUnlocking.MasterOfUnlockingID }; // TODO synergies
                     self.startingActiveItemIds = new List<int>() { 356 };
                     self.startingGunIds = new List<int>() { 89 };
                     self.startingAlternateGunIds = new List<int>() { 651 };
@@ -105,7 +124,7 @@ namespace BeyondThePast
 
                 case PlayableCharacters.Convict:
                     self.startingPassiveItemIds = new List<int>() { EmbarrassingPhoto.EmbarrassingPhotoID, EmptyBriefcase.EmptyBriefcaseID };
-                    self.startingActiveItemIds = new List<int>() { PremiumCigarettes.PremiumCigarettesID, 460 };
+                    self.startingActiveItemIds = new List<int>() { PremiumCigarettes.PremiumCigarettesID, 460 }; // TODO synergies
                     self.startingGunIds = new List<int>() { 80, 2 };
                     self.startingAlternateGunIds = new List<int>() { 652, 2 };
                     break;
@@ -143,10 +162,22 @@ namespace BeyondThePast
                     break;
 
                 case PlayableCharacters.Bullet:
-                    self.startingPassiveItemIds = new List<int>() { 414, 572 };
+                    self.startingPassiveItemIds = new List<int>() { 414, 572, OldBulletsBlessing.OldBulletsBlessingID };
                     self.startingActiveItemIds = new List<int>() { };
                     self.startingGunIds = new List<int>() { 417 };
                     self.startingAlternateGunIds = new List<int>() { 813 };
+                    break;
+
+                case PlayableCharacters.CoopCultist:
+
+                    if (GameManager.Instance.CurrentGameType == GameManager.GameType.COOP_2_PLAYER)
+                    {
+                        self.startingPassiveItemIds = new List<int>() { 326, FakeHeroBandana.FakeHeroBandanaID, 375 };
+                        self.startingActiveItemIds = new List<int>() { 412 };
+                        self.startingGunIds = new List<int>() { 24, 10 };
+                        self.startingAlternateGunIds = new List<int>() { 811, 10 };
+                    }
+
                     break;
             }
 
@@ -184,6 +215,15 @@ namespace BeyondThePast
 
         private void LoadBulletModule()
         {
+            OldBulletsBlessing.Register();
+            CompassItem.Register();
+        }
+
+        private void LoadCultistModule()
+        {
+            FakeHeroBandana.Register();
+            LonelinessCookie.Register();
+            WarningItem.Register();
         }
     }
 }
