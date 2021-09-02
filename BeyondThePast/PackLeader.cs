@@ -38,9 +38,12 @@ namespace BeyondThePast
             item.quality = PickupObject.ItemQuality.EXCLUDED;
         }
 
+        // doesn't matter if these are reset on drop
+
         private int companionCountAtLastUpdate = 0;
         private StatModifier statBuff;
         private Coroutine checkForCompanionCoroutine;
+        private Coroutine checkForColtCoroutine;
 
         public override void Pickup(PlayerController player)
         {
@@ -61,7 +64,7 @@ namespace BeyondThePast
 
             checkForCompanionCoroutine = player.StartCoroutine(CheckForCompanion());
 
-            player.StartCoroutine(CheckForColt());
+            checkForColtCoroutine = player.StartCoroutine(CheckForColt());
 
             base.Pickup(player);
         }
@@ -76,9 +79,11 @@ namespace BeyondThePast
                     {
                         if (item.PickupObjectId == 62)
                         {
-                            item.InfiniteAmmo = true;
-                            item.PreventStartingOwnerFromDropping = true;
-                            yield break;
+                            if (!item.InfiniteAmmo || !item.PreventStartingOwnerFromDropping)
+                            {
+                                item.InfiniteAmmo = true;
+                                item.PreventStartingOwnerFromDropping = true;
+                            }
                         }
                     }
                 }
@@ -136,8 +141,12 @@ namespace BeyondThePast
                 player.StopCoroutine(checkForCompanionCoroutine);
                 checkForCompanionCoroutine = null;
 
+                player.StopCoroutine(checkForColtCoroutine);
+                checkForColtCoroutine = null;
+
                 player.ownerlessStatModifiers.Remove(statBuff);
                 statBuff = null;
+
                 player.stats.RecalculateStats(player, false, false);
             }
         }

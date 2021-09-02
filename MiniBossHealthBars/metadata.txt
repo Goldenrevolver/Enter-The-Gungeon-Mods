@@ -1,0 +1,7 @@
+Name: MiniBossHealthBars
+Version: 1.0.1
+Author: Goldenrevolver
+
+DLL: MiniBossHealthBars.dll
+
+Depends: Base 0.2

@@ -139,17 +139,48 @@ namespace CuttingRoomFloor
                         }
                     }
 
-                    if (synergy.NameKey.Trim() == "#FISH_BACKUP")
+                    if (synergy.NameKey == "#FISH_BACKUP")
                     {
+                        // seems like it was a bug the entire time due to adding one non-gun
                         synergy.RequiresAtLeastOneGunAndOneItem = false;
-                        synergy.OptionalItemIDs.Clear();
-                        synergy.OptionalGunIDs.Add(287);
+                    }
+
+                    if (synergy.NameKey == "#EVENACHILD")
+                    {
+                        synergy.MandatoryGunIDs.RemoveAll((x) => x == 24);
+                        synergy.OptionalGunIDs = new List<int>() { 24, 811 };
+                    }
+
+                    if (synergy.NameKey == "#ROBOTHANDS")
+                    {
+                        synergy.MandatoryGunIDs.RemoveAll((x) => x == 88);
+                        synergy.OptionalGunIDs = new List<int>() { 88, 812 };
+
+                        var robotsLeftHand = PickupObjectDatabase.GetById(576) as Gun;
+
+                        var dualWieldSwitcher = robotsLeftHand.gameObject.AddComponent<CustomDualWieldSynergySwitcher>();
+
+                        dualWieldSwitcher.firstDualWieldGun = 88;
+                        dualWieldSwitcher.secondDualWieldGun = 812;
+
+                        robotsLeftHand.gameObject.AddComponent<CustomSynergyHandRemover>().SynergyToCheck = CustomSynergyType.ROBOT_HANDS;
+                        PickupObjectDatabase.GetById(88).gameObject.AddComponent<CustomSynergyHandRemover>().SynergyToCheck = CustomSynergyType.ROBOT_HANDS;
+                        PickupObjectDatabase.GetById(812).gameObject.AddComponent<CustomSynergyHandRemover>().SynergyToCheck = CustomSynergyType.ROBOT_HANDS;
+                    }
+
+                    if (synergy.NameKey == "#HEROOFCHICKEN")
+                    {
+                        synergy.MandatoryGunIDs.RemoveAll((x) => x == 417);
+                        synergy.OptionalGunIDs = new List<int>() { 417, 813 };
                     }
 
                     if (synergy.ActivationStatus == SynergyEntry.SynergyActivation.INACTIVE)
                     {
                         if (synergy.MandatoryGunIDs != null && synergy.MandatoryGunIDs.Contains(10) && synergy.MandatoryGunIDs.Contains(24))
                         {
+                            synergy.MandatoryGunIDs.RemoveAll((x) => x == 24);
+                            synergy.OptionalGunIDs = new List<int>() { 24, 811 };
+
                             synergy.NameKey = "Harmless Fun";
                             synergy.ActivationStatus = enableStarterSynergies ? SynergyEntry.SynergyActivation.ACTIVE_UNBOOSTED : SynergyEntry.SynergyActivation.INACTIVE;
                             synergy.IgnoreLichEyeBullets = true;
@@ -214,7 +245,7 @@ namespace CuttingRoomFloor
             {
                 NameKey = "Irradiated Ones",
                 ActivationStatus = SynergyEntry.SynergyActivation.ACTIVE,
-                MandatoryItemIDs = new List<int>() { 204, 342 }, // Uranium Ammolet + Radiated jewelry synergy
+                MandatoryItemIDs = new List<int>() { 204, 342 }, // Uranium Ammolet + Irradiated Lead
                 MandatoryGunIDs = new List<int>(),
                 OptionalItemIDs = new List<int>(),
                 OptionalGunIDs = new List<int>(),

@@ -62,6 +62,8 @@
   <ItemGroup>
     <Compile Include="BrittleBullets.cs" />
     <Compile Include="BubbleShield.cs" />
+    <Compile Include="CustomSynergyHandRemover.cs" />
+    <Compile Include="CustomDualWieldSynergySwitcher.cs" />
     <Compile Include="CueBullets.cs" />
     <Compile Include="CustomTransformGunSynergyProcessor.cs" />
     <Compile Include="CuttingRoomFloor.cs" />

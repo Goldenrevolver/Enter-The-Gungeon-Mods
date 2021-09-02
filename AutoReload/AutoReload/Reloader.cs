@@ -9,16 +9,15 @@ namespace AutoReload
             // the variable checking is exactly the same as it would be in PlayerController.Update
             if (AutoReload.EmptyClipReload && !BraveUtility.isLoadingLevel && !GameManager.Instance.IsLoadingLevel)
             {
-                PlayerController[] players = GameManager.Instance.AllPlayers;
-                foreach (var player in players)
+                foreach (var player in GameManager.Instance.AllPlayers)
                 {
-                    if (player != null)
+                    if (player)
                     {
                         Gun currentGun = player.CurrentGun;
 
                         // the commented out version is the original code from the GameUIRoot class for checking if the clip is empty (for showing the ui message 'reload')
-                        // if (currentGun != null && currentGun.ClipShotsRemaining == 0 && (currentGun.ClipCapacity > 1 || currentGun.ammo == 0) && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
-                        if (currentGun != null && currentGun.ClipShotsRemaining == 0 && currentGun.ClipCapacity > 1 && currentGun.ammo > 0 && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
+                        // if (currentGun && currentGun.ClipShotsRemaining == 0 && (currentGun.ClipCapacity > 1 || currentGun.ammo == 0) && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
+                        if (currentGun && currentGun.ClipShotsRemaining == 0 && currentGun.ClipCapacity > 1 && currentGun.ammo > 0 && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
                         {
                             Reload(player);
                         }
@@ -31,36 +30,28 @@ namespace AutoReload
         {
             if (AutoReload.UseExceptions)
             {
-                // checks whether AutoReload should be disabled when you have the Rad Gun (normal or synergy version) or Cog Of Battle equipped or any other modded items that use the base game implementation
-                if ((player.CurrentGun && player.CurrentGun.LocalActiveReload) || (player.IsPrimaryPlayer && Gun.ActiveReloadActivated) || (!player.IsPrimaryPlayer && Gun.ActiveReloadActivatedPlayerTwo))
+                // checks whether AutoReload should be disabled when you have the Turbo Gun, the Rad Gun (normal or synergy version) or Cog Of Battle equipped or any other modded items that use the base game implementation
+                if (player.CurrentGun && (player.CurrentGun.GetComponent<RechargeGunModifier>() || player.CurrentGun.LocalActiveReload || (player.IsPrimaryPlayer && Gun.ActiveReloadActivated) || (!player.IsPrimaryPlayer && Gun.ActiveReloadActivatedPlayerTwo)))
                 {
                     return;
                 }
             }
 
-            // delegate is not simplified on purpose as this is the original code from the HandlePlayerInput method called in the Update method of the PlayerController class
-            if (player.AcceptingAnyInput && player.AcceptingNonMotionInput)
+            // original code is in PlayerController.HandlePlayerInput, called in PlayerController.Update
+            if (player.AcceptingAnyInput && player.AcceptingNonMotionInput && player.CurrentGun)
             {
-                if (player.CurrentGun != null)
+                player.CurrentGun.Reload();
+
+                player.CurrentGun.OnReloadPressed?.Invoke(player, player.CurrentGun, true);
+
+                if (player.CurrentSecondaryGun)
                 {
-                    player.CurrentGun.Reload();
-                    if (player.CurrentGun.OnReloadPressed != null)
-                    {
-                        player.CurrentGun.OnReloadPressed(player, player.CurrentGun, true);
-                    }
-                    if (player.CurrentSecondaryGun)
-                    {
-                        player.CurrentSecondaryGun.Reload();
-                        if (player.CurrentSecondaryGun.OnReloadPressed != null)
-                        {
-                            player.CurrentSecondaryGun.OnReloadPressed(player, player.CurrentSecondaryGun, true);
-                        }
-                    }
-                    if (player.OnReloadPressed != null)
-                    {
-                        player.OnReloadPressed(player, player.CurrentGun);
-                    }
+                    player.CurrentSecondaryGun.Reload();
+
+                    player.CurrentSecondaryGun.OnReloadPressed?.Invoke(player, player.CurrentSecondaryGun, true);
                 }
+
+                player.OnReloadPressed?.Invoke(player, player.CurrentGun);
             }
         }
     }

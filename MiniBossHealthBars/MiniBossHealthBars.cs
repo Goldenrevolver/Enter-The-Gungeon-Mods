@@ -7,7 +7,6 @@ namespace MiniBossHealthBars
     public class MiniBossHealthBars : ETGModule
     {
         public static readonly string MOD_NAME = "Mini Boss Health Bars";
-        public static readonly string VERSION = "1.0";
 
         // other mods can add their boss guids to this list (with reflection, or a dependency if they really want to)
         public static readonly List<string> horizontalMiniBossGuidList = new List<string>() { "edc61b105ddd4ce18302b82efdc47178", "db97e486ef02425280129e1e27c33118" };
@@ -18,10 +17,17 @@ namespace MiniBossHealthBars
 
         public override void Start()
         {
-            new Hook(typeof(HealthHaver).GetProperty("HasHealthBar").GetGetMethod(), typeof(MiniBossHealthBars).GetMethod(nameof(MiniBossHealthBars.HasHealthBarHook)));
-            new Hook(typeof(HealthHaver).GetProperty("UsesVerticalBossBar").GetGetMethod(), typeof(MiniBossHealthBars).GetMethod(nameof(MiniBossHealthBars.UsesVerticalBossBarHook)));
+            try
+            {
+                new Hook(typeof(HealthHaver).GetProperty("HasHealthBar").GetGetMethod(), typeof(MiniBossHealthBars).GetMethod(nameof(MiniBossHealthBars.HasHealthBarHook)));
+                new Hook(typeof(HealthHaver).GetProperty("UsesVerticalBossBar").GetGetMethod(), typeof(MiniBossHealthBars).GetMethod(nameof(MiniBossHealthBars.UsesVerticalBossBarHook)));
+            }
+            catch (Exception e)
+            {
+                ETGModConsole.Log($"<color=red>Exception whilst setting up hooks: {e}</color>");
+            }
 
-            ETGModConsole.Log($"{MOD_NAME} v{VERSION} initialized");
+            ETGModConsole.Log($"{MOD_NAME} v{Metadata.Version} initialized");
         }
 
         public override void Exit()

@@ -1,0 +1,7 @@
+Name: BetterBeholsterShrine
+Version: 1.1
+Author: Goldenrevolver
+
+DLL: BetterBeholsterShrine.dll
+
+Depends: Base 0.2

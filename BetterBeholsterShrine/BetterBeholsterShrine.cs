@@ -1,12 +1,12 @@
 ﻿using MonoMod.RuntimeDetour;
 using System;
+using System.Collections.Generic;
 
 namespace BetterBeholsterShrine
 {
     public class BetterBeholsterShrine : ETGModule
     {
         public static readonly string MOD_NAME = "Better Beholster Shrine";
-        public static readonly string VERSION = "1.0";
 
         public override void Init()
         {
@@ -18,27 +18,59 @@ namespace BetterBeholsterShrine
 
         public override void Start()
         {
-            ETGModConsole.Commands.AddGroup("beholsterShrine");
-            ETGModConsole.Commands.GetGroup("beholsterShrine").AddUnit("cheat", delegate (string[] e)
+            try
             {
-                Cheat();
-            });
+                ETGModConsole.Commands.AddGroup("beholsterShrine");
+                ETGModConsole.Commands.GetGroup("beholsterShrine").AddUnit("cheat", delegate (string[] e)
+                {
+                    Cheat();
+                }).AddUnit("uncheat", delegate (string[] e)
+                {
+                    Uncheat();
+                });
 
-            new Hook(typeof(BeholsterShrineController).GetMethod("DoShrineEffect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), typeof(BetterBeholsterShrine).GetMethod(nameof(DoShrineEffectHook)));
+                try
+                {
+                    new Hook(typeof(BeholsterShrineController).GetMethod("DoShrineEffect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), typeof(BetterBeholsterShrine).GetMethod(nameof(DoShrineEffectHook)));
+                    new Hook(typeof(BeholsterShrineController).GetMethod("CheckCanBeUsed", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), typeof(BetterBeholsterShrine).GetMethod(nameof(CheckCanBeUsedHook)));
+                }
+                catch (Exception e)
+                {
+                    ETGModConsole.Log($"<color=red>Exception whilst setting up hooks: {e}</color>");
+                }
 
-            new Hook(typeof(BeholsterShrineController).GetMethod("CheckCanBeUsed", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), typeof(BetterBeholsterShrine).GetMethod(nameof(CheckCanBeUsedHook)));
-
-            ETGModConsole.Log($"{MOD_NAME} v{VERSION} initialized. You can use 'beholsterShrine cheat' to... cheat.");
+                ETGModConsole.Log($"{MOD_NAME} v{Metadata.Version} initialized");
+            }
+            catch (Exception e)
+            {
+                ETGModConsole.Log($"<color=red>Exception in Start: {e}</color>");
+            }
         }
+
+        private static readonly List<GungeonFlags> flags = new List<GungeonFlags>
+        {
+            GungeonFlags.SHRINE_BEHOLSTER_GUN_01,
+            GungeonFlags.SHRINE_BEHOLSTER_GUN_02,
+            GungeonFlags.SHRINE_BEHOLSTER_GUN_03,
+            GungeonFlags.SHRINE_BEHOLSTER_GUN_04,
+            GungeonFlags.SHRINE_BEHOLSTER_GUN_05,
+            GungeonFlags.SHRINE_BEHOLSTER_GUN_06
+        };
 
         private void Cheat()
         {
-            GameStatsManager.Instance.SetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_01, true);
-            GameStatsManager.Instance.SetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_02, true);
-            GameStatsManager.Instance.SetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_03, true);
-            GameStatsManager.Instance.SetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_04, true);
-            GameStatsManager.Instance.SetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_05, true);
-            GameStatsManager.Instance.SetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_06, true);
+            foreach (var item in flags)
+            {
+                GameStatsManager.Instance.SetFlag(item, true);
+            }
+        }
+
+        private void Uncheat()
+        {
+            foreach (var item in flags)
+            {
+                GameStatsManager.Instance.SetFlag(item, false);
+            }
         }
 
         // we don't call orig at all, we replace the method instead
@@ -47,30 +79,15 @@ namespace BetterBeholsterShrine
             typeof(BeholsterShrineController).GetMethod("SetFlagForID", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(self, new object[] { interactor.CurrentGun.PickupObjectId });
 
             int num = 0;
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_01))
+
+            foreach (var item in flags)
             {
-                num++;
+                if (GameStatsManager.Instance.GetFlag(item))
+                {
+                    num++;
+                }
             }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_02))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_03))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_04))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_05))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_06))
-            {
-                num++;
-            }
+
             if (num == 6)
             {
                 LootEngine.TryGiveGunToPlayer(PickupObjectDatabase.GetById(self.Gun01ID).gameObject, interactor, false);
@@ -88,18 +105,22 @@ namespace BetterBeholsterShrine
                 typeof(BeholsterShrineController).GetField("m_useCount", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(self, 100);
 
                 interactor.inventory.GunChangeForgiveness = true;
+
                 for (int i = 0; i < 100; i++)
                 {
                     Gun targetGunWithChange = interactor.inventory.GetTargetGunWithChange(i);
+
                     if (targetGunWithChange.PickupObjectId == self.Gun01ID)
                     {
                         if (i != 0)
                         {
                             interactor.inventory.ChangeGun(i, false, false);
                         }
+
                         break;
                     }
                 }
+
                 interactor.inventory.GunChangeForgiveness = false;
             }
             else
@@ -116,29 +137,12 @@ namespace BetterBeholsterShrine
             // if all 6 guns are on the shrine, you can always use it; let's count how many they have
             int num = 0;
 
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_01))
+            foreach (var item in flags)
             {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_02))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_03))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_04))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_05))
-            {
-                num++;
-            }
-            if (GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_06))
-            {
-                num++;
+                if (GameStatsManager.Instance.GetFlag(item))
+                {
+                    num++;
+                }
             }
 
             // guarantee to call orig even if its not needed in case someone else hooks it or other weird stuff

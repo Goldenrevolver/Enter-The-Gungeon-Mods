@@ -11,6 +11,8 @@ namespace BeyondThePast
         public static int MasterOfUnlockingID;
         private static readonly string theItemName = "Master of Unlocking";
 
+        public static Action<int> OnKeysChanged = delegate (int keys) { };
+
         public static void Register()
         {
             //Refers to an embedded png in the project. Make sure to embed your resources! Google it
@@ -92,7 +94,6 @@ namespace BeyondThePast
         }
 
         private StatModifier statBuff;
-        public static Action<int> OnKeysChanged = delegate (int keys) { };
 
         public override void Pickup(PlayerController player)
         {
@@ -161,6 +162,7 @@ namespace BeyondThePast
 
                 player.ownerlessStatModifiers.Remove(statBuff);
                 statBuff = null;
+
                 player.stats.RecalculateStats(player, false, false);
             }
         }

@@ -41,6 +41,8 @@ namespace BeyondThePast
             item.quality = PickupObject.ItemQuality.EXCLUDED;
         }
 
+        private Coroutine checkForHandCoroutine;
+
         public override void Pickup(PlayerController player)
         {
             if (this.m_pickedUp)
@@ -48,9 +50,34 @@ namespace BeyondThePast
                 return;
             }
 
-            player.StartCoroutine(CheckForHand());
+            checkForHandCoroutine = player.StartCoroutine(CheckForHand());
 
             base.Pickup(player);
+        }
+
+        public override DebrisObject Drop(PlayerController player)
+        {
+            var ret = base.Drop(player);
+
+            Cleanup(player);
+
+            return ret;
+        }
+
+        protected override void OnDestroy()
+        {
+            Cleanup(Owner);
+
+            base.OnDestroy();
+        }
+
+        private void Cleanup(PlayerController player)
+        {
+            if (player)
+            {
+                player.StopCoroutine(checkForHandCoroutine);
+                checkForHandCoroutine = null;
+            }
         }
 
         private IEnumerator CheckForHand()
@@ -64,7 +91,6 @@ namespace BeyondThePast
                         if (item.PickupObjectId == 576)
                         {
                             item.PreventStartingOwnerFromDropping = true;
-                            yield break;
                         }
                     }
                 }

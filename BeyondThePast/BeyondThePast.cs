@@ -27,40 +27,45 @@ namespace BeyondThePast
 
         public override void Start()
         {
-            ETGModConsole.Commands.AddGroup("beyondThePast");
-            ETGModConsole.Commands.GetGroup("beyondThePast").AddUnit("enabled", delegate (string[] e)
-            {
-                // flips the bool value
-                ModEnabled ^= true;
-                ETGModConsole.Log($"Beyond The Past is now " + (ModEnabled ? "enabled" : "disabled") + ".");
-                PlayerPrefs.SetInt("BeyondThePastEnabled", ModEnabled ? 1 : 0);
-                PlayerPrefs.Save();
-            });
-
             try
             {
+                ETGModConsole.Commands.AddGroup("beyondThePast");
+                ETGModConsole.Commands.GetGroup("beyondThePast").AddUnit("enabled", delegate (string[] e)
+                {
+                    // flips the bool value
+                    ModEnabled ^= true;
+                    ETGModConsole.Log($"Beyond The Past is now " + (ModEnabled ? "enabled" : "disabled") + ".");
+                    PlayerPrefs.SetInt("BeyondThePastEnabled", ModEnabled ? 1 : 0);
+                    PlayerPrefs.Save();
+                });
+
                 ItemBuilder.Init();
 
                 if (GameStatsManager.Instance.GetCharacterSpecificFlag(PlayableCharacters.Robot, CharacterSpecificGungeonFlags.KILLED_PAST))
                 {
                     LoadRobotModule();
                 }
+
                 if (GameStatsManager.Instance.GetCharacterSpecificFlag(PlayableCharacters.Bullet, CharacterSpecificGungeonFlags.KILLED_PAST))
                 {
                     LoadBulletModule();
                 }
+
                 if (GameStatsManager.Instance.GetCharacterSpecificFlag(PlayableCharacters.Convict, CharacterSpecificGungeonFlags.KILLED_PAST))
                 {
                     LoadConvictModule();
                 }
+
                 if (GameStatsManager.Instance.GetCharacterSpecificFlag(PlayableCharacters.Guide, CharacterSpecificGungeonFlags.KILLED_PAST))
                 {
                     LoadHunterModule();
                 }
+
                 if (GameStatsManager.Instance.GetCharacterSpecificFlag(PlayableCharacters.Pilot, CharacterSpecificGungeonFlags.KILLED_PAST))
                 {
                     LoadPilotModule();
                 }
+
                 if (GameStatsManager.Instance.GetCharacterSpecificFlag(PlayableCharacters.Soldier, CharacterSpecificGungeonFlags.KILLED_PAST))
                 {
                     LoadMarineModule();
@@ -84,7 +89,7 @@ namespace BeyondThePast
             }
             catch (Exception e)
             {
-                ETGModConsole.Log($"<color=FF0000>Exception in Start: {e}</color>");
+                ETGModConsole.Log($"<color=red>Exception in Start: {e}</color>");
             }
         }
 
@@ -116,7 +121,7 @@ namespace BeyondThePast
             switch (self.characterIdentity)
             {
                 case PlayableCharacters.Pilot:
-                    self.startingPassiveItemIds = new List<int>() { 187, 473, 491, MasterOfUnlocking.MasterOfUnlockingID }; // TODO synergies
+                    self.startingPassiveItemIds = new List<int>() { 187, 473, 491, MasterOfUnlocking.MasterOfUnlockingID };
                     self.startingActiveItemIds = new List<int>() { 356 };
                     self.startingGunIds = new List<int>() { 89 };
                     self.startingAlternateGunIds = new List<int>() { 651 };
@@ -124,7 +129,7 @@ namespace BeyondThePast
 
                 case PlayableCharacters.Convict:
                     self.startingPassiveItemIds = new List<int>() { EmbarrassingPhoto.EmbarrassingPhotoID, EmptyBriefcase.EmptyBriefcaseID };
-                    self.startingActiveItemIds = new List<int>() { PremiumCigarettes.PremiumCigarettesID, 460 }; // TODO synergies
+                    self.startingActiveItemIds = new List<int>() { PremiumCigarettes.PremiumCigarettesID, 460 };
                     self.startingGunIds = new List<int>() { 80, 2 };
                     self.startingAlternateGunIds = new List<int>() { 652, 2 };
                     break;

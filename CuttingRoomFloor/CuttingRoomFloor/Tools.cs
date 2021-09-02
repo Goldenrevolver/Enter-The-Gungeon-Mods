@@ -12,7 +12,7 @@ namespace CuttingRoomFloor
 
         public static void LogError(object o, bool debug = false)
         {
-            ETGModConsole.Log($"<color=FF0000>{o}</color>", debug);
+            ETGModConsole.Log($"<color=red>{o}</color>", debug);
         }
 
         public static MethodInfo GetMethod(Type classType, string methodName, bool isStatic = false)

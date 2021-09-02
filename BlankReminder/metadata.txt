@@ -1,0 +1,7 @@
+Name: BlankReminder
+Version: 1.0.2
+Author: Goldenrevolver
+
+DLL: BlankReminder.dll
+
+Depends: Base 0.2

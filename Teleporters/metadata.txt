@@ -1,0 +1,7 @@
+Name: TeleportersEverywhere
+Version: 1.0.1
+Author: Goldenrevolver
+
+DLL: Teleporters.dll
+
+Depends: Base 0.2

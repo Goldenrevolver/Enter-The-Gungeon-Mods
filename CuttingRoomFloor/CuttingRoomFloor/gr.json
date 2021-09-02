@@ -11,7 +11,7 @@
         },
         "gr:thirst_for_vengeance": {
             "name": "Thirst For Vengeance",
-            "notes": "+5% rate of fire for every missing half a heart (or every missing armor from the starting 6 as Robot). You enter a bleedout state on death for a short time. If you kill an enemy during the bleedout state you revive and heal for a small amount."
+            "notes": "+5% rate of fire for every missing half a heart (or per armor missing from 6 armor for the Robot). You enter a bleedout state on death for a short time. If you kill an enemy during the bleedout state you revive and heal for a small amount."
 		    },
         "gr:hungry_caterpillar": {
             "name": "Hungry Caterpillar",
@@ -59,10 +59,10 @@
           "notes": "The Crossbow deals 50% bonus damage against jammed enemies, stacking with Silver Bullets, for a total of 487.5% damage dealt."
         },
         "#TRASHJUNKAN": {
-          "notes": "Junkan's attacks also poison hit foes."
+          "notes": "Ser Junkan's attacks also poison enemies hit."
         },
         "#NANOMACHINES": {
-          "notes": "Nanomachines effect triggers more often and after triggering it you deal double damage for a short amount of time."
+          "notes": "Nanomachines' effect triggers more often and after triggering it you deal double damage for a short amount of time."
         },
         "#HEARTUNLOCKET": {
           "notes": "Grants an empty heart container."
@@ -80,7 +80,7 @@
           "notes": "Fully emptying either gun's magazine immediately switches to its fully reloaded partner gun."
         },
         "#BOWLING": {
-          "notes": "Hitting enemies at least 3 three times with one shot from Serious Cannon recovers 1 ammo when it dissipates."
+          "notes": "Hitting enemies at least 3 times with one shot from Serious Cannon recovers 1 ammo when it dissipates."
         },
         "#MOONRAKING_IT_IN": {
           "notes": "Changes Moonscraper into a special form."
@@ -101,7 +101,7 @@
           "notes": "Trusty Lockpicks turn golden, increasing their unlock chance from 50% to 100%."
         },
         "#ROBOTHANDS": {
-          "notes": "Allows to dual wield both of robot's arms."
+          "notes": "Allows to dual wield both of Robot's hands."
         },
         "#SUPPLYDROP": {
           "notes": "Spawns two additional supply crates containing random room rewards."
@@ -122,7 +122,7 @@
           "notes": "Flipping a table now shoots the projectiles of the Big Shotgun."
         },
         "Shard Blade": {
-          "notes": "Sprung has an additional random trigger, doubling the chances of turning into Windgunner."
+          "notes": "Sprun has an additional random trigger, doubling the chances of turning into Windgunner."
         },
         "High Energy": {
           "notes": "If an enemy is killed by the Combined Rifle's energy ball, it release a burst of The Fat Line's shots upon dissipating."

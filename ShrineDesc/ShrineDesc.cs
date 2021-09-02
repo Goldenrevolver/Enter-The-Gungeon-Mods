@@ -10,7 +10,6 @@ namespace ShrineDesc
     public class ShrineDesc : ETGModule
     {
         public static readonly string MOD_NAME = "Shrine Descriptions";
-        public static readonly string VERSION = "1.0.2";
 
         private static GameObject shrineTextHolder;
         private static Dictionary<string, string> descriptions;
@@ -62,10 +61,10 @@ namespace ShrineDesc
             }
             catch (Exception e)
             {
-                ETGModConsole.Log($"<color=#FF0000>{MOD_NAME} v{VERSION}: error while setting up hooks: {e.Message}</color>");
+                ETGModConsole.Log($"<color=red>Exception whilst setting up hooks: {e}</color>");
             }
 
-            ETGModConsole.Log($"{MOD_NAME} v{VERSION} initialized");
+            ETGModConsole.Log($"{MOD_NAME} v{Metadata.Version} initialized");
         }
 
         public override void Exit()
@@ -74,14 +73,7 @@ namespace ShrineDesc
 
         public static string RemoveFromEnd(string s, string suffix)
         {
-            if (s.EndsWith(suffix))
-            {
-                return s.Substring(0, s.Length - suffix.Length);
-            }
-            else
-            {
-                return s;
-            }
+            return s.EndsWith(suffix) ? s.Substring(0, s.Length - suffix.Length) : s;
         }
 
         public static void ClearTextBox(Action<DungeonPlaceableBehaviour, PlayerController> baseMethod, DungeonPlaceableBehaviour shrine, PlayerController player)
@@ -135,6 +127,7 @@ namespace ShrineDesc
             StringBuilder tooltip = new StringBuilder("Give the shrine the weapons the Beholster uses in game throughout multiple runs. When placing the last gun on the shrine, they will all be returned to the player, granting the Behold! synergy");
 
             bool hasBetterBeholsterShrineMod = false;
+
             foreach (var item in ETGMod.GameMods)
             {
                 // mod is installed
@@ -151,22 +144,27 @@ namespace ShrineDesc
             {
                 tooltip.Append($"\nEye of the Beholster needed{(player.inventory.ContainsGun(shrine.Gun01ID) ? " (in your inventory)" : "")}");
             }
+
             if (!GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_02))
             {
                 tooltip.Append($"\nCom4nd0 needed{(player.inventory.ContainsGun(shrine.Gun02ID) ? " (in your inventory)" : "")}");
             }
+
             if (!GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_03))
             {
                 tooltip.Append($"\nMachine Pistol needed{(player.inventory.ContainsGun(shrine.Gun03ID) ? " (in your inventory)" : "")}");
             }
+
             if (!GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_04))
             {
                 tooltip.Append($"\nVoid Marshal needed{(player.inventory.ContainsGun(shrine.Gun04ID) ? " (in your inventory)" : "")}");
             }
+
             if (!GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_05))
             {
                 tooltip.Append($"\nTrank Gun needed{(player.inventory.ContainsGun(shrine.Gun05ID) ? " (in your inventory)" : "")}");
             }
+
             if (!GameStatsManager.Instance.GetFlag(GungeonFlags.SHRINE_BEHOLSTER_GUN_06))
             {
                 tooltip.Append($"\nM1911 needed{(player.inventory.ContainsGun(shrine.Gun06ID) ? " (in your inventory)" : "")}");

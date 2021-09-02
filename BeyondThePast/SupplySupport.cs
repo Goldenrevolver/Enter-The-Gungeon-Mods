@@ -34,15 +34,15 @@ namespace BeyondThePast
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "gr");
             SupplySupportID = item.PickupObjectId;
 
-            item.consumable = false;
-            item.consumableHandlesOwnDuration = false;
-            item.consumableOnActiveUse = false;
-            item.consumableOnCooldownUse = false;
-
             foreach (var publicField in typeof(SupplyDropItem).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
             {
                 publicField.SetValue(item, publicField.GetValue(supplyDrop));
             }
+
+            item.consumable = false;
+            item.consumableHandlesOwnDuration = false;
+            item.consumableOnActiveUse = false;
+            item.consumableOnCooldownUse = false;
 
             //Set the rarity of the item
             item.quality = PickupObject.ItemQuality.EXCLUDED;
@@ -92,12 +92,8 @@ namespace BeyondThePast
             }
         }
 
+        [SerializeField]
         private bool hasBeenUsedThisFloor = false;
-
-        public override bool CanBeUsed(PlayerController user)
-        {
-            return !hasBeenUsedThisFloor;
-        }
 
         public override void Pickup(PlayerController player)
         {
@@ -108,6 +104,11 @@ namespace BeyondThePast
 
             player.OnNewFloorLoaded += ResetCooldown;
             base.Pickup(player);
+        }
+
+        public override bool CanBeUsed(PlayerController user)
+        {
+            return !hasBeenUsedThisFloor;
         }
 
         protected override void DoEffect(PlayerController user)

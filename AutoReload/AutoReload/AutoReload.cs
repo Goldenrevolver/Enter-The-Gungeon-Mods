@@ -1,13 +1,12 @@
 ﻿using MonoMod.RuntimeDetour;
 using System;
-using System.Reflection;
 using UnityEngine;
 
 namespace AutoReload
 {
     public class AutoReload : ETGModule
     {
-        private static readonly string version = "1.2";
+        public static readonly string MOD_NAME = "AutoReload";
 
         public static bool EmptyClipReload;
         public static bool ClearedRoomReload;
@@ -35,48 +34,62 @@ namespace AutoReload
 
         public override void Start()
         {
-            // AddGroup doesnt return the correct group for some reason so I have to get it again
-            ETGModConsole.Commands.AddGroup("autoReload");
-            ETGModConsole.Commands.GetGroup("autoReload").AddUnit("emptyClip", delegate (string[] e)
+            try
             {
-                // flips the bool value
-                EmptyClipReload ^= true;
-                ETGModConsole.Log("AutoReload on empty clip: " + EmptyClipReload);
-                PlayerPrefs.SetInt("AutoReloadOnEmptyClip", EmptyClipReload ? 1 : 0);
-                PlayerPrefs.Save();
-            }).AddUnit("clearedRoom", delegate (string[] e)
-            {
-                // flips the bool value
-                ClearedRoomReload ^= true;
-                ETGModConsole.Log("AutoReload on cleared room: " + ClearedRoomReload);
-                PlayerPrefs.SetInt("AutoReloadOnClearedRoom", ClearedRoomReload ? 1 : 0);
-                PlayerPrefs.Save();
-            }).AddUnit("useExceptions", delegate (string[] e)
-            {
-                // flips the bool value
-                UseExceptions ^= true;
-                ETGModConsole.Log("Use AutoReload exceptions: " + UseExceptions);
-                PlayerPrefs.SetInt("AutoReloadUseExceptions", UseExceptions ? 1 : 0);
-                PlayerPrefs.Save();
-            });
+                // AddGroup doesn't return the correct group for some reason so I have to get it again
+                ETGModConsole.Commands.AddGroup("autoReload");
+                ETGModConsole.Commands.GetGroup("autoReload").AddUnit("emptyClip", delegate (string[] e)
+                {
+                    // flips the bool value
+                    EmptyClipReload ^= true;
+                    ETGModConsole.Log("AutoReload on empty clip: " + EmptyClipReload);
+                    PlayerPrefs.SetInt("AutoReloadOnEmptyClip", EmptyClipReload ? 1 : 0);
+                    PlayerPrefs.Save();
+                }).AddUnit("clearedRoom", delegate (string[] e)
+                {
+                    // flips the bool value
+                    ClearedRoomReload ^= true;
+                    ETGModConsole.Log("AutoReload on cleared room: " + ClearedRoomReload);
+                    PlayerPrefs.SetInt("AutoReloadOnClearedRoom", ClearedRoomReload ? 1 : 0);
+                    PlayerPrefs.Save();
+                }).AddUnit("useExceptions", delegate (string[] e)
+                {
+                    // flips the bool value
+                    UseExceptions ^= true;
+                    ETGModConsole.Log("Use AutoReload exceptions: " + UseExceptions);
+                    PlayerPrefs.SetInt("AutoReloadUseExceptions", UseExceptions ? 1 : 0);
+                    PlayerPrefs.Save();
+                });
 
-            Hook hook = new Hook(typeof(PlayerController).GetMethod("OnRoomCleared", BindingFlags.Public | BindingFlags.Instance), typeof(AutoReload).GetMethod("OnRoomClearedHook"));
+                try
+                {
+                    Hook hook = new Hook(typeof(PlayerController).GetMethod(nameof(PlayerController.OnRoomCleared)), typeof(AutoReload).GetMethod(nameof(AutoReload.OnRoomClearedHook)));
+                }
+                catch (Exception e)
+                {
+                    ETGModConsole.Log($"<color=red>Exception whilst setting up hooks: {e}</color>");
+                }
 
-            ETGModConsole.Log($"AutoReload v{version} initialized (on empty clip: {EmptyClipReload}, on cleared room: {ClearedRoomReload}, use exceptions: {UseExceptions})");
+                ETGModConsole.Log($"{MOD_NAME} v{Metadata.Version} initialized (on empty clip: {EmptyClipReload}, on cleared room: {ClearedRoomReload}, use exceptions: {UseExceptions})");
+            }
+            catch (Exception e)
+            {
+                ETGModConsole.Log($"<color=red>Exception in Start: {e}</color>");
+            }
         }
 
-        public static void OnRoomClearedHook(Action<PlayerController> baseMethod, PlayerController player)
+        public static void OnRoomClearedHook(Action<PlayerController> orig, PlayerController self)
         {
-            // if you dont call the base method, its not getting called at all (I wonder how that affects compatibility if you hook the same method)
-            baseMethod(player);
-            if (ClearedRoomReload && player != null)
-            {
-                Gun currentGun = player.CurrentGun;
+            orig(self);
 
-                // similar to the description in Reloader.Update
-                if (currentGun != null && currentGun.ClipCapacity > 1 && currentGun.ammo > 0 && !currentGun.IsReloading && !player.IsInputOverridden && !currentGun.IsHeroSword)
+            if (ClearedRoomReload && self)
+            {
+                Gun currentGun = self.CurrentGun;
+
+                // similar to the code in Reloader.Update
+                if (currentGun && currentGun.ClipCapacity > 1 && currentGun.ammo > 0 && !currentGun.IsReloading && !self.IsInputOverridden && !currentGun.IsHeroSword)
                 {
-                    Reloader.Reload(player);
+                    Reloader.Reload(self);
                 }
             }
         }

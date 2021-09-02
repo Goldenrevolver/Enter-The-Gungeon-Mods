@@ -1,5 +1,5 @@
 Name: CuttingRoomFloor
-Version: 4.0
+Version: 4.1
 Author: Goldenrevolver
 
 DLL: CuttingRoomFloor.dll

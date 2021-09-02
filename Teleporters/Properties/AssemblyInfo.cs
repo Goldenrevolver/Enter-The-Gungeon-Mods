@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TeleportersEverywhere")]
+[assembly: AssemblyTitle("Teleporters")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TeleportersEverywhere")]
+[assembly: AssemblyProduct("Teleporters")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8C408ED0-561D-47AF-8C73-5B906D2B8B50")]
+[assembly: Guid("EDE30226-3361-425B-ABAB-6C89896A2437")]
 
 // Version information for an assembly consists of the following four values:
 //

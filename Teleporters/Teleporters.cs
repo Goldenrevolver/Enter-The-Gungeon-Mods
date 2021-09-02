@@ -3,12 +3,11 @@ using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 
-namespace TeleportersEverywhere
+namespace Teleporters
 {
-    public class TeleportersEverywhere : ETGModule
+    public class Teleporters : ETGModule
     {
         public static readonly string MOD_NAME = "Teleporters Everywhere";
-        public static readonly string VERSION = "1.0";
 
         public override void Init()
         {
@@ -20,16 +19,23 @@ namespace TeleportersEverywhere
             // GameStatsManager.Instance.SetFlag(GungeonFlags.BLACKSMITH_ELEMENT2, false);
             // GameStatsManager.Instance.SetFlag(GungeonFlags.BLACKSMITH_ELEMENT3, false);
 
-            new Hook(typeof(PlayerController).GetMethod(nameof(PlayerController.BraveOnLevelWasLoaded)), typeof(TeleportersEverywhere).GetMethod(nameof(TeleportersEverywhere.AddTeleporters)));
+            try
+            {
+                new Hook(typeof(PlayerController).GetMethod(nameof(PlayerController.BraveOnLevelWasLoaded)), typeof(Teleporters).GetMethod(nameof(Teleporters.AddMoreTeleporters)));
+            }
+            catch (Exception e)
+            {
+                ETGModConsole.Log($"<color=red>Exception whilst setting up hooks: {e}</color>");
+            }
 
-            ETGModConsole.Log($"{MOD_NAME} v{VERSION} initialized");
+            ETGModConsole.Log($"{MOD_NAME} v{Metadata.Version} initialized");
         }
 
         public override void Exit()
         {
         }
 
-        public static void AddTeleporters(Action<PlayerController> orig, PlayerController player)
+        public static void AddMoreTeleporters(Action<PlayerController> orig, PlayerController player)
         {
             orig(player);
 
@@ -66,7 +72,7 @@ namespace TeleportersEverywhere
             }
             catch (Exception e)
             {
-                ETGModConsole.Log("Error getting room data: " + e);
+                ETGModConsole.Log($"<color=red>Exception while getting room data: {e}</color>");
             }
         }
     }

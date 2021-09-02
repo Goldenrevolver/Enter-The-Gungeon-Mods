@@ -9,6 +9,8 @@ namespace BeyondThePast
         public static int PremiumCigarettesID;
         private static readonly string theItemName = "Premium Cigarettes";
 
+        private static readonly bool damageIncreasesWithEveryUse = false;
+
         public static void Register()
         {
             //Refers to an embedded png in the project. Make sure to embed your resources! Google it
@@ -90,8 +92,6 @@ namespace BeyondThePast
                 }
             }
         }
-
-        private readonly bool damageIncreasesWithEveryUse = false;
 
         public override bool CanBeUsed(PlayerController user)
         {

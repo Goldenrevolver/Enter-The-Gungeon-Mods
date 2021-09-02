@@ -8,6 +8,10 @@ namespace BeyondThePast
     {
         public static int OldBulletsBlessingID;
 
+        // I know shield_of_the_maiden is not a direct zelda reference
+        // bomb, boomerang, shield_of_the_maiden, bottle, grappling_hook
+        private static readonly List<int> possibleItems = new List<int>() { 108, 448, 447, 558, 250 };
+
         public static void Register()
         {
             //The name of the item
@@ -27,7 +31,7 @@ namespace BeyondThePast
 
             //Ammonomicon entry variables
             string shortDesc = "Aim True, My...";
-            string longDesc = "Every floor you gain a random item from a select range, that you can only use on this floor. The first two chests you open every floor will also contain the Map and the Light Compass (does not work on mimics).\n\nThe Bullet still remembers the words of his late mentor.";
+            string longDesc = "Every floor you gain a random item from a select range, that you can only use on this floor. The first two chests you open every floor will also contain the Map and the Pocket Compass (does not work on mimics).\n\nThe Bullet still remembers the words of his late mentor.";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
@@ -38,9 +42,17 @@ namespace BeyondThePast
             item.quality = PickupObject.ItemQuality.EXCLUDED;
         }
 
+        [SerializeField]
         private bool givenMapThisFloor = false;
+
+        [SerializeField]
         private bool givenCompassThisFloor = false;
+
+        // 109 is the ice bomb, just a sensible fallback item in case something breaks
+        [SerializeField]
         private int itemIDGivenLastFloor = 109;
+
+        [SerializeField]
         private int lastCheckedFloor = -1;
 
         public override void Pickup(PlayerController player)
@@ -108,10 +120,6 @@ namespace BeyondThePast
                 GiveRandomZeldaItem(player);
             }
         }
-
-        // I know shield_of_the_maiden is not a direct zelda reference
-        // bomb, boomerang, shield_of_the_maiden, bottle, grappling_hook
-        private readonly List<int> possibleItems = new List<int>() { 108, 448, 447, 558, 250 };
 
         private void GiveRandomZeldaItem(PlayerController player)
         {

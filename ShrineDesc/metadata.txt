@@ -1,0 +1,7 @@
+Name: ShrineDescriptions
+Version: 1.0.3
+Author: Goldenrevolver
+
+DLL: ShrineDesc.dll
+
+Depends: Base 0.2

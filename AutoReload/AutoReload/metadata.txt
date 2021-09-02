@@ -1,0 +1,7 @@
+Name: AutoReload
+Version: 1.2.1
+Author: Goldenrevolver
+
+DLL: AutoReload.dll
+
+Depends: Base 0.2

@@ -7,7 +7,7 @@ namespace BeyondThePast
     public class CompassItem : SenseOfDirectionItem
     {
         public static int CompassID;
-        private static readonly string theItemName = "Light Compass";
+        private static readonly string theItemName = "Pocket Compass";
 
         public static void Register()
         {
